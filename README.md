@@ -53,3 +53,20 @@ The workflow hashes that secret with SHA-256 and exposes **only the hash** to th
 The prototype uses selected public ICCROM content current in 2026, including the Strategic Plan 2026–2031 / CARE vision, African craftsmanship capacity building, ASILI, READY Track 2, World Heritage Leadership, Sustaining Digital Heritage, ChemiNovaEU, and selected 2026 news, courses and publications.
 
 This is a design prototype, not an official ICCROM website. Copy should be validated and migrated from the source CMS before production use.
+
+
+## Brand direction used in the concept
+
+The October 2026 redesign follows ICCROM's 2024 identity direction rather than inventing a separate Agic visual language:
+
+- Bricolage Grotesque for expressive display typography;
+- Lora for editorial/body copy;
+- Tajawal / Noto Sans support for Arabic and multilingual use;
+- the 2024 location-pin/globe logo language;
+- a vibrant blue + warm red-led palette with broad secondary colours;
+- editorial photography and tactile/heritage-inspired graphic marks;
+- motion used to reveal impact and connected content rather than as decoration.
+
+The prototype colour tokens are **brand-aligned working values**, not a claim that the hexadecimal values are the final ICCROM production tokens. Before delivery, replace them with the exact tokens from ICCROM's supplied brand asset/template pack.
+
+The concept also uses selected public ICCROM imagery via remote URLs for presentation purposes. Production should ingest approved original assets into the CMS/DAM instead of hotlinking them.
