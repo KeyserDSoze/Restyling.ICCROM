@@ -1,11 +1,43 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowDownRight, ArrowRight, ChevronDown, ExternalLink,
-  Globe2, Languages, Menu, Moon, Search, Sparkles, Sun, X, MapPin, Users, Layers3
+  ArrowDownRight, ArrowRight, ChevronDown, ExternalLink, Globe2, Languages,
+  Menu, Moon, Play, Search, Sun, X, MapPin, Layers3, BookOpen, GraduationCap
 } from 'lucide-react';
 import PasswordGate from './components/PasswordGate';
-import { courses, directions, news, projects, publications, stats } from './data/content';
+import { courses, directions, news, projects, publications } from './data/content';
 import { getCopy, languages } from './i18n';
+
+const BRAND_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/7/7e/ICCROM-Logo.png';
+
+const visuals = {
+  assembly: 'https://www.iccrom.org/sites/default/files/2025-12/iccrom_34th_session_of_the_general_assembly-3176.jpg',
+  cinqueTerre: 'https://www.iccrom.org/sites/default/files/2026-03/pnc-ituc_iccrom_2026_3.jpg',
+  ready: 'https://www.iccrom.org/sites/default/files/2026-06/iccrom_ready_laquila_min260526-250.jpg',
+  africa: 'https://www.iccrom.org/sites/default/files/2024-04/20240408_the_7th_african_world_heritage_youth_forum_iccrom_field.jpg',
+};
+
+const heroStories = [
+  {
+    image: visuals.cinqueTerre,
+    tag: 'Capacity building · Italy',
+    title: 'Heritage becomes stronger when knowledge moves.',
+    text: 'Professionals from around the world learn in real places, with real communities and real conservation challenges.',
+  },
+  {
+    image: visuals.assembly,
+    tag: '139 Member States',
+    title: 'A global meeting place for heritage.',
+    text: 'ICCROM brings governments, professionals and partners together to shape the future of cultural heritage.',
+  },
+  {
+    image: visuals.ready,
+    tag: 'READY Track 2 · Europe',
+    title: 'Preparedness is part of conservation.',
+    text: 'Risk managers and cultural first aiders build practical capacity for disasters, extreme weather and complex emergencies.',
+  },
+];
+
+const projectVisuals = [visuals.africa, visuals.ready, visuals.cinqueTerre, visuals.assembly];
 
 function useTheme() {
   const [theme, setTheme] = useState(() => localStorage.getItem('iccrom-theme') || 'light');
@@ -27,171 +59,508 @@ function useLanguage() {
   return [lang, setLang, language];
 }
 
+function AnimatedNumber({ value, prefix = '', suffix = '', duration = 1150 }) {
+  const ref = useRef(null);
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const target = Number(value) || 0;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let raf;
+    let visible = false;
+
+    const start = () => {
+      if (reduceMotion) {
+        setDisplay(target);
+        return;
+      }
+      const started = performance.now();
+      const frame = (now) => {
+        const p = Math.min(1, (now - started) / duration);
+        const eased = 1 - Math.pow(1 - p, 4);
+        setDisplay(Math.round(target * eased));
+        if (p < 1) raf = requestAnimationFrame(frame);
+      };
+      raf = requestAnimationFrame(frame);
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !visible) {
+        cancelAnimationFrame(raf);
+        setDisplay(0);
+        start();
+      }
+      if (!entry.isIntersecting && visible) {
+        cancelAnimationFrame(raf);
+        setDisplay(0);
+      }
+      visible = entry.isIntersecting;
+    }, { threshold: 0.52 });
+
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [value, duration]);
+
+  return <span ref={ref} className="number-value">{prefix}{display.toLocaleString()}{suffix}</span>;
+}
+
+function ReplayReveal() {
+  useEffect(() => {
+    const nodes = document.querySelectorAll('[data-reveal]');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => entry.target.classList.toggle('is-visible', entry.isIntersecting));
+    }, { threshold: 0.13, rootMargin: '0px 0px -5% 0px' });
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+  return null;
+}
+
+function ScrollProgress() {
+  const bar = useRef(null);
+  useEffect(() => {
+    const update = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+      if (bar.current) bar.current.style.transform = `scaleX(${Math.min(1, scrollY / max)})`;
+    };
+    update();
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update);
+    return () => {
+      removeEventListener('scroll', update);
+      removeEventListener('resize', update);
+    };
+  }, []);
+  return <div className="scroll-progress" aria-hidden="true"><span ref={bar} /></div>;
+}
+
 function Header({ t, theme, setTheme, lang, setLang, language }) {
   const [menu, setMenu] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const anchors = ['vision', 'projects', 'news', 'learning', 'publications'];
+
   return (
-    <header className="site-header">
-      <a className="logo" href="#top" aria-label="ICCROM home">
-        <span className="logo-glyph">I</span>
-        <span><strong>ICCROM</strong><small>Heritage in motion</small></span>
+    <header className="topbar">
+      <a className="brand-lockup" href="#top" aria-label="ICCROM home">
+        <img src={BRAND_LOGO} alt="" />
+        <span>International Centre for the Study of the Preservation and Restoration of Cultural Property</span>
       </a>
-      <nav className={menu ? 'nav nav-open' : 'nav'} aria-label="Primary">
+
+      <nav className={menu ? 'main-nav open' : 'main-nav'} aria-label="Primary">
         {t.nav.map((item, i) => <a key={item} href={'#' + anchors[i]} onClick={() => setMenu(false)}>{item}</a>)}
       </nav>
-      <div className="header-tools">
-        <button className="icon-btn" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">{theme === 'dark' ? <Sun size={18}/> : <Moon size={18}/>}</button>
-        <div className="lang-picker">
-          <button className="lang-btn" onClick={() => setLangOpen(!langOpen)} aria-expanded={langOpen}><Languages size={17}/><span>{language.short}</span><ChevronDown size={14}/></button>
-          {langOpen && <div className="lang-menu">{languages.map((item) => <button key={item.code} className={item.code === lang ? 'active' : ''} onClick={() => { setLang(item.code); setLangOpen(false); }}>{item.label}<span>{item.short}</span></button>)}</div>}
+
+      <div className="top-actions">
+        <button className="round-action" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
+          {theme === 'dark' ? <Sun size={18}/> : <Moon size={18}/>}
+        </button>
+        <div className="language">
+          <button className="language-trigger" onClick={() => setLangOpen(!langOpen)} aria-expanded={langOpen}>
+            <Languages size={17}/><span>{language.short}</span><ChevronDown size={14}/>
+          </button>
+          {langOpen && (
+            <div className="language-menu">
+              {languages.map((item) => (
+                <button key={item.code} className={item.code === lang ? 'active' : ''} onClick={() => { setLang(item.code); setLangOpen(false); }}>
+                  {item.label}<span>{item.short}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        <button className="menu-btn" onClick={() => setMenu(!menu)} aria-label="Toggle navigation">{menu ? <X/> : <Menu/>}</button>
+        <button className="menu-toggle" onClick={() => setMenu(!menu)} aria-label="Toggle navigation">{menu ? <X/> : <Menu/>}</button>
       </div>
     </header>
   );
 }
 
 function Hero({ t }) {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = setInterval(() => setActive((value) => (value + 1) % heroStories.length), 5600);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section className="hero" id="top">
-      <div className="hero-grid" aria-hidden="true" />
-      <div className="hero-orbit" aria-hidden="true"><span/><span/><span/></div>
-      <div className="hero-copy reveal">
+      <div className="hero-colour-block blue-block" aria-hidden="true" />
+      <div className="hero-colour-block red-block" aria-hidden="true" />
+      <div className="texture texture-a" aria-hidden="true" />
+
+      <div className="hero-copy" data-reveal>
+        <p className="hero-institution">Intergovernmental organization · Rome · Since 1956</p>
         <p className="eyebrow">{t.eyebrow}</p>
         <h1><span>{t.heroTitleA}</span><em>{t.heroTitleB}</em></h1>
         <p className="hero-lead">{t.heroText}</p>
         <div className="hero-actions">
-          <a className="button primary" href="#projects">{t.explore}<ArrowDownRight size={18}/></a>
-          <a className="text-link" href="#news">{t.latest}<ArrowRight size={17}/></a>
+          <a className="cta dark" href="#projects">{t.explore}<ArrowDownRight size={18}/></a>
+          <a className="inline-link" href="#news">{t.latest}<ArrowRight size={17}/></a>
         </div>
       </div>
-      <div className="hero-visual reveal delay-1" aria-hidden="true">
-        <div className="atlas-card atlas-main"><span className="atlas-kicker">CARE / 2026—2031</span><strong>Conserve.<br/>Activate.<br/>Recognize.</strong><span className="atlas-line"/></div>
-        <div className="atlas-card atlas-mini top"><Globe2/><span>139</span><small>Member States</small></div>
-        <div className="atlas-card atlas-mini bottom"><Sparkles/><span>09</span><small>Priority Areas</small></div>
-        <div className="orbit-label one">people</div><div className="orbit-label two">knowledge</div><div className="orbit-label three">places</div>
-      </div>
-      <div className="hero-stats">{stats.map(s => <div key={s.label}><strong>{s.suffix}{s.value}</strong><span>{s.label}</span></div>)}</div>
-    </section>
-  );
-}
 
-function Framework({ t }) {
-  return (
-    <section className="section framework" id="vision">
-      <div className="section-heading"><p className="eyebrow">Strategic framework / 2026—2031</p><h2>{t.framework}</h2><p>{t.frameworkLead}</p></div>
-      <div className="direction-grid">
-        {directions.map((d) => <article className={'direction-card ' + d.accent} key={d.id}>
-          <div className="direction-top"><span>{d.number}</span><ArrowDownRight/></div>
-          <p>{d.kicker}</p><h3>{d.name}</h3><p className="direction-copy">{d.text}</p>
-          <div className="priority-list">{d.priorities.map((p, i) => <span key={p}><b>PA{i+1}</b>{p}</span>)}</div>
-        </article>)}
+      <div className="hero-media" data-reveal>
+        <div className="hero-photo-stage">
+          {heroStories.map((story, index) => (
+            <img
+              key={story.image}
+              className={index === active ? 'active' : ''}
+              src={story.image}
+              alt=""
+              loading={index === 0 ? 'eager' : 'lazy'}
+            />
+          ))}
+          <div className="hero-photo-wash" />
+          <div className="hero-story-caption">
+            <span>{heroStories[active].tag}</span>
+            <strong>{heroStories[active].title}</strong>
+            <p>{heroStories[active].text}</p>
+          </div>
+          <button className="play-disc" aria-label="Visual storytelling concept"><Play size={20} fill="currentColor"/></button>
+        </div>
+        <div className="hero-story-tabs" aria-label="Hero stories">
+          {heroStories.map((story, index) => (
+            <button key={story.tag} className={index === active ? 'active' : ''} onClick={() => setActive(index)}>
+              <span>0{index + 1}</span><strong>{story.tag}</strong>
+            </button>
+          ))}
+        </div>
       </div>
-    </section>
-  );
-}
 
-function ProjectExplorer({ t, onOpen }) {
-  const [filter, setFilter] = useState('All');
-  const filters = ['All', 'Africa', 'Europe', 'Global', 'Climate', 'Digital'];
-  const filtered = projects.filter((p) => filter === 'All' || p.region === filter || p.theme === filter);
-  return (
-    <section className="section projects-section" id="projects">
-      <div className="section-heading split"><div><p className="eyebrow">Connected programmes & projects</p><h2>{t.projects}</h2></div><p>{t.projectsLead}</p></div>
-      <div className="filter-row" aria-label="Project filters">{filters.map(f => <button className={filter === f ? 'active' : ''} key={f} onClick={() => setFilter(f)}>{f}</button>)}</div>
-      <div className="project-grid">
-        {filtered.map((p, i) => <button className={'project-card project-' + p.tone + (i === 0 ? ' featured' : '')} key={p.id} onClick={() => onOpen(p)}>
-          <div className="project-art" aria-hidden="true"><span/><span/><span/></div>
-          <div className="project-meta"><span>{p.direction}</span><span>{p.region}</span></div>
-          <h3>{p.title}</h3><p>{p.short}</p>
-          <div className="project-bottom"><strong>{p.metric}</strong><span className="round-arrow"><ArrowDownRight size={19}/></span></div>
-        </button>)}
+      <div className="hero-impact-strip">
+        <ImpactNumber value={139} label="Member States" />
+        <ImpactNumber value={70} prefix="~" label="Years of action" />
+        <ImpactNumber value={3} label="Strategic Directions" />
+        <ImpactNumber value={9} label="Priority Areas" />
       </div>
     </section>
   );
 }
 
-function ConnectedStory({ selected, onClose }) {
-  if (!selected) return null;
-  const relatedNews = news.filter(n => selected.related?.includes(n.id));
-  const relatedPubs = publications.filter(p => selected.related?.includes(p.id));
-  const relatedCourses = courses.filter(c => selected.related?.includes(c.id));
+function ImpactNumber({ value, prefix = '', label }) {
   return (
-    <div className="drawer-backdrop" onMouseDown={onClose}>
-      <aside className="story-drawer" onMouseDown={(e) => e.stopPropagation()} aria-label={selected.title + ' details'}>
-        <button className="drawer-close" onClick={onClose}><X/></button>
-        <p className="eyebrow">Connected content / prototype</p><h2>{selected.title}</h2><p className="drawer-lead">{selected.short}</p>
-        <div className="drawer-facts"><span><MapPin/>{selected.countries.join(' · ')}</span><span><Layers3/>{selected.direction} · {selected.theme}</span></div>
-        <div className="relationship-map"><div className="node main-node">Project</div><div className="node">News</div><div className="node">Publications</div><div className="node">Courses</div><div className="node">Places</div><div className="node">Priority Area</div></div>
-        {(relatedNews.length + relatedPubs.length + relatedCourses.length) > 0 && <div className="related-list">
-          <h3>Automatically related</h3>
-          {relatedNews.map(n => <a href={n.link} target="_blank" rel="noreferrer" key={n.id}><span>News · {n.date}</span><strong>{n.title}</strong><ExternalLink size={15}/></a>)}
-          {relatedPubs.map(p => <a href={p.link} target="_blank" rel="noreferrer" key={p.id}><span>Publication · {p.year}</span><strong>{p.title}</strong><ExternalLink size={15}/></a>)}
-          {relatedCourses.map(c => <div className="related-static" key={c.id}><span>Course · {c.date}</span><strong>{c.title}</strong></div>)}
-        </div>}
-        <a className="button primary drawer-link" href={selected.link} target="_blank" rel="noreferrer">View source on ICCROM.org<ExternalLink size={16}/></a>
-      </aside>
+    <div className="hero-impact-item">
+      <strong><AnimatedNumber value={value} prefix={prefix}/></strong>
+      <span>{label}</span>
     </div>
   );
 }
 
-function NewsSection({ t }) {
-  const [active, setActive] = useState(0);
+function BrandTicker() {
+  const words = ['Conserve', 'Activate', 'Recognize', 'People', 'Places', 'Knowledge', 'Resilience', 'Future'];
   return (
-    <section className="section news-section" id="news">
-      <div className="section-heading"><p className="eyebrow">Stories / people / places</p><h2>{t.news}</h2></div>
-      <div className="news-layout">
-        <div className={'news-feature tone-' + news[active].tone}>
-          <div className="news-art"><span className="news-index">0{active + 1}</span><div className="news-shape"/></div>
-          <div className="news-feature-copy"><span>{news[active].date} · {news[active].region}</span><h3>{news[active].title}</h3><p>{news[active].summary}</p><a href={news[active].link} target="_blank" rel="noreferrer">Read on ICCROM.org <ExternalLink size={15}/></a></div>
-        </div>
-        <div className="news-list">{news.map((n, i) => <button key={n.id} onClick={() => setActive(i)} className={i === active ? 'active' : ''}><span>{n.date}</span><strong>{n.title}</strong><small>{n.tag}</small></button>)}</div>
+    <div className="brand-ticker" aria-label="ICCROM themes">
+      <div className="ticker-track">
+        {[...words, ...words].map((word, index) => <span key={word + index}>{word}<i>●</i></span>)}
+      </div>
+    </div>
+  );
+}
+
+function CareSection({ t }) {
+  return (
+    <section className="care-section" id="vision">
+      <div className="section-intro sticky-intro" data-reveal>
+        <p className="eyebrow">Strategic Plan 2026—2031</p>
+        <h2>{t.framework}</h2>
+        <p>{t.frameworkLead}</p>
+        <a href="https://www.iccrom.org/about/overview/mission-and-vision" target="_blank" rel="noreferrer" className="inline-link">
+          Explore the strategic framework <ExternalLink size={15}/>
+        </a>
+      </div>
+
+      <div className="care-stack">
+        {directions.map((direction, index) => (
+          <article className={'care-card care-' + direction.accent} key={direction.id} data-reveal>
+            <div className="care-card-top">
+              <span className="care-number">0{index + 1}</span>
+              <span className="care-label">Strategic direction</span>
+            </div>
+            <h3>{direction.name}</h3>
+            <p className="care-kicker">{direction.kicker}</p>
+            <p>{direction.text}</p>
+            <div className="care-priorities">
+              {direction.priorities.map((priority, i) => (
+                <span key={priority}><b>PA {i + 1}</b>{priority}</span>
+              ))}
+            </div>
+            <div className="care-mark" aria-hidden="true"><span/><span/><span/></div>
+          </article>
+        ))}
       </div>
     </section>
   );
 }
 
-function Learning({ t }) {
+function NewsSection({ t }) {
+  const editorial = [
+    {
+      ...news[0],
+      image: visuals.africa,
+      kicker: 'Craftsmanship · Skills · Livelihoods',
+    },
+    {
+      ...news[1],
+      image: visuals.cinqueTerre,
+      kicker: 'Climate · Community knowledge',
+    },
+    {
+      ...news[3],
+      image: visuals.ready,
+      kicker: 'Preparedness · Resilience',
+    },
+  ];
+
   return (
-    <section className="section learning" id="learning">
-      <div className="learning-intro"><p className="eyebrow">Courses & opportunities</p><h2>{t.learning}</h2><p>Capacity building that moves beyond a single course — connecting learning to institutions, field projects and long-term change.</p></div>
-      <div className="course-stack">{courses.map((c, i) => <article key={c.id} className="course-card"><div className="course-no">0{i+1}</div><div><span className="status-dot"/>{c.status} · {c.date}</div><h3>{c.title}</h3><p>{c.text}</p><footer><span><MapPin size={15}/>{c.place}</span><ArrowDownRight/></footer></article>)}</div>
+    <section className="news-section" id="news">
+      <div className="section-heading" data-reveal>
+        <p className="eyebrow">Stories / people / places</p>
+        <h2>{t.news}</h2>
+        <a href="https://www.iccrom.org/news-events/news" target="_blank" rel="noreferrer" className="inline-link">All news <ExternalLink size={15}/></a>
+      </div>
+
+      <div className="editorial-grid">
+        {editorial.map((item, index) => (
+          <a className={'editorial-card card-' + (index + 1)} key={item.id} href={item.link} target="_blank" rel="noreferrer" data-reveal>
+            <img src={item.image} alt="" loading="lazy" />
+            <div className="editorial-shade" />
+            <div className="editorial-copy">
+              <span>{item.date} · {item.kicker}</span>
+              <h3>{item.title}</h3>
+              <p>{item.summary}</p>
+              <strong>Read story <ArrowRight size={16}/></strong>
+            </div>
+          </a>
+        ))}
+      </div>
     </section>
   );
 }
 
-function Publications({ t }) {
+function ProjectsSection({ t, onOpen }) {
+  const [filter, setFilter] = useState('All');
+  const filters = ['All', 'Africa', 'Europe', 'Global', 'Climate', 'Digital'];
+  const filtered = projects.filter((project) => filter === 'All' || project.region === filter || project.theme === filter);
+
   return (
-    <section className="section publications" id="publications">
-      <div className="section-heading split"><div><p className="eyebrow">Resources / publications / toolkits</p><h2>{t.publications}</h2></div><p>Knowledge becomes more valuable when it is connected directly to the project, place or challenge where it can be applied.</p></div>
-      <div className="pub-grid">{publications.map((p, i) => <a href={p.link} target="_blank" rel="noreferrer" key={p.id} className="pub-card"><div className={'book-cover cover-' + (i+1)}><span>ICCROM</span><strong>{p.title}</strong><small>{p.year}</small></div><div className="pub-copy"><span>{p.type} · {p.year}</span><h3>{p.title}</h3><p>{p.text}</p><span className="pub-link">Open resource <ExternalLink size={14}/></span></div></a>)}</div>
+    <section className="projects-section" id="projects">
+      <div className="projects-heading" data-reveal>
+        <div>
+          <p className="eyebrow">Programmes / projects / outcomes</p>
+          <h2>{t.projects}</h2>
+        </div>
+        <p>{t.projectsLead}</p>
+      </div>
+
+      <div className="project-toolbar">
+        <div className="project-filters">
+          {filters.map((item) => <button className={filter === item ? 'active' : ''} key={item} onClick={() => setFilter(item)}>{item}</button>)}
+        </div>
+        <div className="project-counter"><AnimatedNumber value={filtered.length}/><span>featured projects</span></div>
+      </div>
+
+      <div className="project-mosaic">
+        {filtered.map((project, index) => (
+          <button className={'project-tile tile-' + ((index % 4) + 1)} key={project.id} onClick={() => onOpen(project)} data-reveal>
+            <img src={projectVisuals[index % projectVisuals.length]} alt="" loading="lazy" />
+            <div className="project-overlay" />
+            <div className="project-topline"><span>{project.direction}</span><span>{project.region}</span></div>
+            <div className="project-copy">
+              <span>{project.theme}</span>
+              <h3>{project.title}</h3>
+              <p>{project.short}</p>
+              <div><strong>{project.metric}</strong><i><ArrowDownRight size={18}/></i></div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <ConnectedContentExplainer />
     </section>
   );
 }
 
-function GlobalNetwork({ t }) {
-  const places = ['Rome','Nara','Nairobi','Tunis','Jeju','Bucharest','Suzhou','Malé'];
+function ConnectedContentExplainer() {
   return (
-    <section className="network-section">
-      <div className="network-map" aria-hidden="true"><div className="world-ring r1"/><div className="world-ring r2"/><div className="world-ring r3"/>{places.map((p,i)=><span key={p} className={'pin pin-' + (i+1)}>{p}</span>)}</div>
-      <div className="network-copy"><p className="eyebrow">Member States & partners</p><h2>{t.states}</h2><p>ICCROM’s value is global, but its impact happens in real places — through professionals, institutions, communities and policies.</p><div className="network-stats"><span><Users/>139 <small>Member States</small></span><span><Globe2/>Worldwide <small>programmes</small></span></div></div>
+    <div className="connected-explainer" data-reveal>
+      <div className="connected-copy">
+        <p className="eyebrow">A different content model</p>
+        <h3>One project.<br/>A whole ecosystem.</h3>
+        <p>In the new CMS, projects do not live on isolated pages. They connect automatically to publications, courses, news, places and strategic priorities.</p>
+      </div>
+      <div className="connected-map" aria-label="Connected content model diagram">
+        <span className="connector c1"/><span className="connector c2"/><span className="connector c3"/><span className="connector c4"/><span className="connector c5"/>
+        <div className="map-node core"><Layers3/><strong>Project</strong></div>
+        <div className="map-node n1"><BookOpen/><span>Publication</span></div>
+        <div className="map-node n2"><GraduationCap/><span>Course</span></div>
+        <div className="map-node n3"><Globe2/><span>Place</span></div>
+        <div className="map-node n4"><span>News</span></div>
+        <div className="map-node n5"><span>Priority Area</span></div>
+      </div>
+    </div>
+  );
+}
+
+function LearningAndKnowledge({ t }) {
+  return (
+    <section className="knowledge-section" id="learning">
+      <div className="knowledge-photo" data-reveal>
+        <img src={visuals.cinqueTerre} alt="" loading="lazy" />
+        <div className="knowledge-photo-copy">
+          <span>Learning in context</span>
+          <strong>From training to transformation.</strong>
+        </div>
+      </div>
+
+      <div className="knowledge-content">
+        <div className="section-heading" data-reveal>
+          <p className="eyebrow">Courses & opportunities</p>
+          <h2>{t.learning}</h2>
+          <p>Capacity building becomes more powerful when learning connects directly to places, people, institutions and long-term outcomes.</p>
+        </div>
+        <div className="course-list">
+          {courses.map((course, index) => (
+            <article key={course.id} data-reveal>
+              <span>0{index + 1}</span>
+              <div><small>{course.status} · {course.date}</small><h3>{course.title}</h3><p>{course.text}</p></div>
+              <div className="course-place"><MapPin size={14}/>{course.place}</div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PublicationsSection({ t }) {
+  return (
+    <section className="publication-section" id="publications">
+      <div className="publication-heading" data-reveal>
+        <p className="eyebrow">Resources / guidance / publications</p>
+        <h2>{t.publications}</h2>
+        <p>Make ICCROM knowledge discoverable by challenge, programme, geography and audience — not only by document type.</p>
+      </div>
+      <div className="publication-row">
+        {publications.map((publication, index) => (
+          <a className={'publication-card publication-' + (index + 1)} href={publication.link} target="_blank" rel="noreferrer" key={publication.id} data-reveal>
+            <div className="publication-cover">
+              <span>ICCROM</span>
+              <strong>{publication.title}</strong>
+              <small>{publication.year}</small>
+            </div>
+            <div className="publication-meta">
+              <span>{publication.type}</span>
+              <h3>{publication.title}</h3>
+              <p>{publication.text}</p>
+              <strong>Open resource <ExternalLink size={14}/></strong>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function GlobalSection({ t }) {
+  return (
+    <section className="global-section">
+      <div className="global-photo" data-reveal><img src={visuals.assembly} alt="" loading="lazy"/></div>
+      <div className="global-copy" data-reveal>
+        <p className="eyebrow">Member States / partnerships / multilateralism</p>
+        <h2>{t.states}</h2>
+        <p>ICCROM is a convening platform: a place where Member States, institutions and heritage professionals can exchange knowledge and turn shared challenges into shared action.</p>
+        <div className="global-metrics">
+          <div><strong><AnimatedNumber value={139}/></strong><span>Member States</span></div>
+          <div><strong><AnimatedNumber value={19}/></strong><span>Countries in a single READY cohort</span></div>
+          <div><strong><AnimatedNumber value={34}/></strong><span>World Heritage professionals in Suzhou</span></div>
+        </div>
+      </div>
     </section>
   );
 }
 
 function SearchBand({ t }) {
-  const [q, setQ] = useState('');
+  const [query, setQuery] = useState('');
   const matches = useMemo(() => {
-    if (!q.trim()) return [];
-    const all = [...projects.map(x => ({...x, kind:'Project'})), ...news.map(x => ({...x, kind:'News'})), ...publications.map(x => ({...x, kind:'Publication'}))];
-    return all.filter(x => [x.title, x.short || '', x.summary || '', x.text || ''].join(' ').toLowerCase().includes(q.toLowerCase())).slice(0,5);
-  }, [q]);
-  return <section className="search-band"><div><p className="eyebrow">One connected knowledge layer</p><h2>{t.search}</h2></div><div className="search-box"><Search/><input value={q} onChange={e => setQ(e.target.value)} placeholder="Try: climate, Africa, digital, World Heritage…" />{q && <button onClick={()=>setQ('')}><X size={17}/></button>}{matches.length>0 && <div className="search-results">{matches.map(m=><div key={m.kind + '-' + m.id}><span>{m.kind}</span><strong>{m.title}</strong></div>)}</div>}</div></section>;
+    if (!query.trim()) return [];
+    const all = [
+      ...projects.map((item) => ({ ...item, kind: 'Project' })),
+      ...news.map((item) => ({ ...item, kind: 'News' })),
+      ...publications.map((item) => ({ ...item, kind: 'Publication' })),
+      ...courses.map((item) => ({ ...item, kind: 'Course' })),
+    ];
+    return all.filter((item) => [item.title, item.short, item.summary, item.text, item.region, item.theme].filter(Boolean).join(' ').toLowerCase().includes(query.toLowerCase())).slice(0, 6);
+  }, [query]);
+
+  return (
+    <section className="search-band">
+      <div data-reveal><p className="eyebrow">One connected knowledge layer</p><h2>{t.search}</h2></div>
+      <div className="search-shell" data-reveal>
+        <Search size={20}/>
+        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try: climate, Africa, digital, World Heritage…" />
+        {query && <button onClick={() => setQuery('')} aria-label="Clear search"><X size={18}/></button>}
+        {matches.length > 0 && (
+          <div className="search-results">
+            {matches.map((match) => <div key={match.kind + '-' + match.id}><span>{match.kind}</span><strong>{match.title}</strong></div>)}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ProjectDrawer({ selected, onClose }) {
+  if (!selected) return null;
+  const relatedNews = news.filter((item) => selected.related?.includes(item.id));
+  const relatedPublications = publications.filter((item) => selected.related?.includes(item.id));
+  const relatedCourses = courses.filter((item) => selected.related?.includes(item.id));
+
+  return (
+    <div className="drawer-backdrop" onMouseDown={onClose}>
+      <aside className="project-drawer" onMouseDown={(event) => event.stopPropagation()}>
+        <button className="drawer-close" onClick={onClose}><X/></button>
+        <p className="eyebrow">Connected content / prototype</p>
+        <h2>{selected.title}</h2>
+        <p className="drawer-lead">{selected.short}</p>
+        <div className="drawer-facts">
+          <span><MapPin/>{selected.countries.join(' · ')}</span>
+          <span><Layers3/>{selected.direction} · {selected.theme}</span>
+        </div>
+        <div className="drawer-relations">
+          <span>Project</span><span>News</span><span>Publication</span><span>Course</span><span>Place</span><span>Priority Area</span>
+        </div>
+        {(relatedNews.length + relatedPublications.length + relatedCourses.length) > 0 && (
+          <div className="drawer-related">
+            <h3>Automatically related</h3>
+            {relatedNews.map((item) => <a href={item.link} target="_blank" rel="noreferrer" key={item.id}><span>News · {item.date}</span><strong>{item.title}</strong><ExternalLink size={14}/></a>)}
+            {relatedPublications.map((item) => <a href={item.link} target="_blank" rel="noreferrer" key={item.id}><span>Publication · {item.year}</span><strong>{item.title}</strong><ExternalLink size={14}/></a>)}
+            {relatedCourses.map((item) => <div key={item.id}><span>Course · {item.date}</span><strong>{item.title}</strong></div>)}
+          </div>
+        )}
+        <a className="cta dark" href={selected.link} target="_blank" rel="noreferrer">View source on ICCROM.org <ExternalLink size={15}/></a>
+      </aside>
+    </div>
+  );
 }
 
 function Footer({ t }) {
-  return <footer className="footer"><div className="footer-mark">ICCROM</div><h2>{t.footer}</h2><div className="footer-row"><span>Static concept prototype · October 2026</span><span>Rome, Italy · iccrom.org</span><span>Concept / Agic Technology</span></div></footer>;
+  return (
+    <footer className="footer">
+      <div className="footer-logo"><img src={BRAND_LOGO} alt="ICCROM"/></div>
+      <h2>{t.footer}</h2>
+      <div className="footer-meta">
+        <span>Static restyling concept · October 2026</span>
+        <span>Rome, Italy · iccrom.org</span>
+        <span>Concept prototype · Agic Technology</span>
+      </div>
+    </footer>
+  );
 }
 
 function Site() {
@@ -199,13 +568,25 @@ function Site() {
   const [lang, setLang, language] = useLanguage();
   const [selected, setSelected] = useState(null);
   const t = getCopy(lang);
-  useEffect(() => {
-    const els = [...document.querySelectorAll('.reveal')];
-    const obs = new IntersectionObserver(entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')), { threshold:.12 });
-    els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
-  return <div className="site-shell"><Header {...{t, theme, setTheme, lang, setLang, language}}/><Hero t={t}/><Framework t={t}/><ProjectExplorer t={t} onOpen={setSelected}/><NewsSection t={t}/><Learning t={t}/><Publications t={t}/><GlobalNetwork t={t}/><SearchBand t={t}/><Footer t={t}/><ConnectedStory selected={selected} onClose={()=>setSelected(null)}/></div>;
+
+  return (
+    <div className="site-shell">
+      <ReplayReveal/>
+      <ScrollProgress/>
+      <Header {...{ t, theme, setTheme, lang, setLang, language }}/>
+      <Hero t={t}/>
+      <BrandTicker/>
+      <CareSection t={t}/>
+      <NewsSection t={t}/>
+      <ProjectsSection t={t} onOpen={setSelected}/>
+      <LearningAndKnowledge t={t}/>
+      <PublicationsSection t={t}/>
+      <GlobalSection t={t}/>
+      <SearchBand t={t}/>
+      <Footer t={t}/>
+      <ProjectDrawer selected={selected} onClose={() => setSelected(null)}/>
+    </div>
+  );
 }
 
 export default function App() {
