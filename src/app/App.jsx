@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDownRight, ArrowRight, ChevronDown, ExternalLink,
-  Globe2, Languages, Menu, Moon, Search, Sparkles, Sun, X, MapPin, Users, Layers3
+  Activity, Globe2, Languages, Menu, Moon, Search, Sparkles, Sun, X, MapPin, Users, Layers3
 } from 'lucide-react';
 import PasswordGate from './components/PasswordGate';
 import { courses, directions, news, projects, publications, stats } from './data/content';
@@ -25,6 +25,114 @@ function useLanguage() {
     document.documentElement.dir = language.dir;
   }, [lang, language.dir]);
   return [lang, setLang, language];
+}
+
+
+function AnimatedNumber({ value, prefix = '', suffix = '', duration = 1250 }) {
+  const ref = useRef(null);
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const target = Number(String(value).replace(/[^0-9.]/g, '')) || 0;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let frame;
+    let wasVisible = false;
+
+    const run = () => {
+      if (reduceMotion) {
+        setDisplay(target);
+        return;
+      }
+      const started = performance.now();
+      const tick = (now) => {
+        const raw = Math.min(1, (now - started) / duration);
+        const eased = 1 - Math.pow(1 - raw, 4);
+        setDisplay(Math.round(target * eased));
+        if (raw < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !wasVisible) {
+        cancelAnimationFrame(frame);
+        setDisplay(0);
+        run();
+      } else if (!entry.isIntersecting && wasVisible) {
+        cancelAnimationFrame(frame);
+        setDisplay(0);
+      }
+      wasVisible = entry.isIntersecting;
+    }, { threshold: 0.58 });
+
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [value, duration]);
+
+  return <span ref={ref} className="motion-number">{prefix}{display.toLocaleString()}{suffix}</span>;
+}
+
+function ScrollProgress() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const update = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      if (ref.current) ref.current.style.transform = `scaleX(${Math.min(1, window.scrollY / max)})`;
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+  return <div className="scroll-progress" aria-hidden="true"><span ref={ref} /></div>;
+}
+
+function MotionTicker() {
+  const items = ['Cultural heritage', 'Capacity building', 'Climate resilience', 'World Heritage', 'Living traditions', 'Digital heritage', 'Communities', 'Knowledge'];
+  return (
+    <div className="motion-ticker" aria-label="ICCROM areas of action">
+      <div className="ticker-track">
+        {[...items, ...items].map((item, i) => <span key={item + i}>{item}<i>✦</i></span>)}
+      </div>
+    </div>
+  );
+}
+
+function ImpactNumbers() {
+  const metrics = [
+    { value: 139, label: 'Member States', detail: 'A global intergovernmental network' },
+    { value: 70, prefix: '~', label: 'Years of action', detail: 'Knowledge built across generations' },
+    { value: 3, label: 'Strategic Directions', detail: 'Conserve · Activate · Recognize' },
+    { value: 9, label: 'Priority Areas', detail: 'One connected strategic framework' },
+  ];
+  return (
+    <section className="impact-numbers" aria-label="ICCROM at a glance">
+      <div className="impact-intro">
+        <p className="eyebrow">Institutional scale / human impact</p>
+        <h2>Global authority.<br/><em>Visible impact.</em></h2>
+        <p>Numbers are not decoration: they help make ICCROM’s reach, continuity and strategic ambition immediately legible.</p>
+      </div>
+      <div className="impact-grid">
+        {metrics.map((metric, i) => (
+          <article className="impact-metric" key={metric.label}>
+            <span className="impact-index">0{i + 1}</span>
+            <strong><AnimatedNumber value={metric.value} prefix={metric.prefix} /></strong>
+            <h3>{metric.label}</h3>
+            <p>{metric.detail}</p>
+            <span className="impact-rule" aria-hidden="true" />
+          </article>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function Header({ t, theme, setTheme, lang, setLang, language }) {
@@ -58,6 +166,7 @@ function Hero({ t }) {
       <div className="hero-grid" aria-hidden="true" />
       <div className="hero-orbit" aria-hidden="true"><span/><span/><span/></div>
       <div className="hero-copy reveal">
+        <div className="institutional-chip"><span/>Intergovernmental organization · Rome, Italy · Since 1956</div>
         <p className="eyebrow">{t.eyebrow}</p>
         <h1><span>{t.heroTitleA}</span><em>{t.heroTitleB}</em></h1>
         <p className="hero-lead">{t.heroText}</p>
@@ -68,11 +177,11 @@ function Hero({ t }) {
       </div>
       <div className="hero-visual reveal delay-1" aria-hidden="true">
         <div className="atlas-card atlas-main"><span className="atlas-kicker">CARE / 2026—2031</span><strong>Conserve.<br/>Activate.<br/>Recognize.</strong><span className="atlas-line"/></div>
-        <div className="atlas-card atlas-mini top"><Globe2/><span>139</span><small>Member States</small></div>
-        <div className="atlas-card atlas-mini bottom"><Sparkles/><span>09</span><small>Priority Areas</small></div>
+        <div className="atlas-card atlas-mini top"><Globe2/><AnimatedNumber value={139}/><small>Member States</small></div>
+        <div className="atlas-card atlas-mini bottom"><Sparkles/><AnimatedNumber value={9}/><small>Priority Areas</small></div>
         <div className="orbit-label one">people</div><div className="orbit-label two">knowledge</div><div className="orbit-label three">places</div>
       </div>
-      <div className="hero-stats">{stats.map(s => <div key={s.label}><strong>{s.suffix}{s.value}</strong><span>{s.label}</span></div>)}</div>
+      <div className="hero-stats">{stats.map(s => <div className="motion-stat" key={s.label}><strong><AnimatedNumber value={s.value} prefix={s.suffix || ''} /></strong><span>{s.label}</span></div>)}</div>
     </section>
   );
 }
@@ -99,7 +208,7 @@ function ProjectExplorer({ t, onOpen }) {
   return (
     <section className="section projects-section" id="projects">
       <div className="section-heading split"><div><p className="eyebrow">Connected programmes & projects</p><h2>{t.projects}</h2></div><p>{t.projectsLead}</p></div>
-      <div className="filter-row" aria-label="Project filters">{filters.map(f => <button className={filter === f ? 'active' : ''} key={f} onClick={() => setFilter(f)}>{f}</button>)}</div>
+      <div className="projects-toolbar"><div className="filter-row" aria-label="Project filters">{filters.map(f => <button className={filter === f ? 'active' : ''} key={f} onClick={() => setFilter(f)}>{f}</button>)}</div><div className="project-count"><AnimatedNumber value={filtered.length}/><span>featured projects in this view</span></div></div>
       <div className="project-grid">
         {filtered.map((p, i) => <button className={'project-card project-' + p.tone + (i === 0 ? ' featured' : '')} key={p.id} onClick={() => onOpen(p)}>
           <div className="project-art" aria-hidden="true"><span/><span/><span/></div>
@@ -142,7 +251,7 @@ function NewsSection({ t }) {
     <section className="section news-section" id="news">
       <div className="section-heading"><p className="eyebrow">Stories / people / places</p><h2>{t.news}</h2></div>
       <div className="news-layout">
-        <div className={'news-feature tone-' + news[active].tone}>
+        <div key={news[active].id} className={'news-feature tone-' + news[active].tone}>
           <div className="news-art"><span className="news-index">0{active + 1}</span><div className="news-shape"/></div>
           <div className="news-feature-copy"><span>{news[active].date} · {news[active].region}</span><h3>{news[active].title}</h3><p>{news[active].summary}</p><a href={news[active].link} target="_blank" rel="noreferrer">Read on ICCROM.org <ExternalLink size={15}/></a></div>
         </div>
@@ -205,7 +314,7 @@ function Site() {
     els.forEach(el => obs.observe(el));
     return () => obs.disconnect();
   }, []);
-  return <div className="site-shell"><Header {...{t, theme, setTheme, lang, setLang, language}}/><Hero t={t}/><Framework t={t}/><ProjectExplorer t={t} onOpen={setSelected}/><NewsSection t={t}/><Learning t={t}/><Publications t={t}/><GlobalNetwork t={t}/><SearchBand t={t}/><Footer t={t}/><ConnectedStory selected={selected} onClose={()=>setSelected(null)}/></div>;
+  return <div className="site-shell"><ScrollProgress/><Header {...{t, theme, setTheme, lang, setLang, language}}/><Hero t={t}/><MotionTicker/><Framework t={t}/><ImpactNumbers/><ProjectExplorer t={t} onOpen={setSelected}/><NewsSection t={t}/><Learning t={t}/><Publications t={t}/><GlobalNetwork t={t}/><SearchBand t={t}/><Footer t={t}/><ConnectedStory selected={selected} onClose={()=>setSelected(null)}/></div>;
 }
 
 export default function App() {
