@@ -235,7 +235,7 @@ function ScrollProgress() {
   return <div className="scroll-progress" aria-hidden="true"><span ref={bar} /></div>;
 }
 
-function Header({ t, theme, setTheme, lang, setLang, language }) {
+function Header({ t, theme, setTheme, lang, setLang, language, onChoose }) {
   const [menu, setMenu] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const anchors = ['vision', 'projects', 'news', 'learning', 'publications'];
@@ -252,6 +252,7 @@ function Header({ t, theme, setTheme, lang, setLang, language }) {
       </nav>
 
       <div className="top-actions">
+        <button className="round-action experience-action" onClick={onChoose} aria-label="Choose experience" title="Choose experience"><Layers3 size={18}/></button>
         <button className="round-action" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
           {theme === 'dark' ? <Sun size={18}/> : <Moon size={18}/>}
         </button>
