@@ -1490,3 +1490,25 @@ img{max-width:100%;display:block}
     stroke-width:1.8;
   }
 }
+
+
+/* Weave connector layering: lines under cards, contact dots over borders */
+.weave-connection-lines{
+  z-index:3!important;
+}
+.weave-connection-dots{
+  z-index:7!important;
+}
+.weave-live-graph-dynamic .weave-core-node,
+.weave-live-graph-dynamic .weave-live-node{
+  z-index:6;
+}
+.weave-dynamic-demo .weave-demo-item{
+  z-index:5;
+}
+.weave-dynamic-demo .demo-project{
+  z-index:6;
+}
+.weave-connection-dots .weave-connection-dot-end{
+  paint-order:stroke fill;
+}
