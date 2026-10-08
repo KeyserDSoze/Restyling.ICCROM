@@ -70,3 +70,13 @@ The October 2026 redesign follows ICCROM's 2024 identity direction rather than i
 The prototype colour tokens are **brand-aligned working values**, not a claim that the hexadecimal values are the final ICCROM production tokens. Before delivery, replace them with the exact tokens from ICCROM's supplied brand asset/template pack.
 
 The concept also uses selected public ICCROM imagery via remote URLs for presentation purposes. Production should ingest approved original assets into the CMS/DAM instead of hotlinking them.
+
+
+## Preview access passwords
+
+The GitHub Pages pipeline accepts two repository secrets:
+
+- `password_ui`
+- `password_ui_2`
+
+Both are hashed with SHA-256 during the build. The frontend receives only the two hashes and accepts either password. After a successful unlock, the preview state is stored in `localStorage` without an expiry, so the same browser will not ask again unless site storage is cleared.
