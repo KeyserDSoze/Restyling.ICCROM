@@ -1089,10 +1089,16 @@ function WeaveSite({ onChoose }) {
 
           <div className="weave-live-graph" style={{ '--lens-colour': active.colour }} aria-label={'Connected content for ' + active.label}>
             <div className="weave-grid-bg"/>
+            <div className="weave-graph-meta">
+              <span><i/>Live knowledge graph</span>
+              <span>{active.nodes.length} connected nodes</span>
+            </div>
+            <div className="weave-core-orbit" aria-hidden="true"><i/><i/><i/></div>
             <span className="weave-edge we1"/><span className="weave-edge we2"/><span className="weave-edge we3"/><span className="weave-edge we4"/><span className="weave-edge we5"/>
             <div className="weave-core-node"><small>Current lens</small><strong>{active.core}</strong><span>{active.label}</span></div>
             {active.nodes.map((node,index) => (
               <a href={node.link} target="_blank" rel="noreferrer" className={'weave-live-node node-pos-' + (index+1)} key={node.title}>
+                <b className="weave-node-index">0{index+1}</b>
                 <span>{node.type}</span><strong>{node.title}</strong><small>{node.meta}</small><ArrowRight size={14}/>
               </a>
             ))}
@@ -1120,7 +1126,8 @@ function WeaveSite({ onChoose }) {
           <p>Instead of forcing content into a single tree, Weave exposes the relationships Directus can model underneath the site.</p>
         </div>
         <div className="weave-principle-demo" data-reveal>
-          <div className="weave-demo-item demo-project"><span>Project</span><strong>ASILI</strong></div>
+          <div className="weave-demo-orbit" aria-hidden="true"/>
+          <div className="weave-demo-item demo-project"><span>Project</span><strong>ASILI</strong><small>4 active relationships</small></div>
           <div className="weave-demo-line dl1"/><div className="weave-demo-line dl2"/><div className="weave-demo-line dl3"/><div className="weave-demo-line dl4"/>
           <div className="weave-demo-item demo-publication"><BookOpen/><span>Resource</span><strong>Climate knowledge</strong></div>
           <div className="weave-demo-item demo-place"><Globe2/><span>Place</span><strong>Madagascar</strong></div>
