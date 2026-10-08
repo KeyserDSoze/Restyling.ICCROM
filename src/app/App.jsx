@@ -1045,13 +1045,51 @@ function WeaveRelationshipDiagram() {
           const vy = center.y - targetCenter.y;
           const halfW = targetRect.width / 2;
           const halfH = targetRect.height / 2;
+          const style = window.getComputedStyle(ref.current);
+          const radius = Math.min(
+            parseFloat(style.borderTopLeftRadius) || 0,
+            parseFloat(style.borderTopRightRadius) || 0,
+            parseFloat(style.borderBottomRightRadius) || 0,
+            parseFloat(style.borderBottomLeftRadius) || 0,
+            halfW,
+            halfH
+          );
+
+          const insideRoundedRect = (x, y) => {
+            const ax = Math.abs(x);
+            const ay = Math.abs(y);
+            if (ax > halfW || ay > halfH) return false;
+
+            const innerW = Math.max(0, halfW - radius);
+            const innerH = Math.max(0, halfH - radius);
+
+            if (ax <= innerW || ay <= innerH) return true;
+
+            const cx = ax - innerW;
+            const cy = ay - innerH;
+            return (cx * cx) + (cy * cy) <= radius * radius;
+          };
+
           const sx = Math.abs(vx) > 0.001 ? halfW / Math.abs(vx) : Number.POSITIVE_INFINITY;
           const sy = Math.abs(vy) > 0.001 ? halfH / Math.abs(vy) : Number.POSITIVE_INFINITY;
-          const scale = Math.min(sx, sy);
+          const rectScale = Math.min(sx, sy);
 
+          // Search the real visible perimeter, including rounded corners.
+          let low = 0;
+          let high = rectScale * 1.15;
+          for (let i = 0; i < 28; i += 1) {
+            const mid = (low + high) / 2;
+            const px = vx * mid;
+            const py = vy * mid;
+            if (insideRoundedRect(px, py)) low = mid;
+            else high = mid;
+          }
+
+          // A tiny inward nudge keeps the dot visually seated on the card border.
+          const borderScale = Math.max(0, low - (1.25 / Math.max(Math.hypot(vx, vy), 1)));
           const end = {
-            x: targetCenter.x + vx * scale,
-            y: targetCenter.y + vy * scale,
+            x: targetCenter.x + vx * borderScale,
+            y: targetCenter.y + vy * borderScale,
           };
 
           return { id, x1: start.x, y1: start.y, x2: end.x, y2: end.y };
