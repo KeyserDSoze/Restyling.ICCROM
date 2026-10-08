@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowDownRight, ArrowRight, ChevronDown, ExternalLink, Globe2, Languages,
+  ArrowDownRight, ArrowLeft, ArrowRight, ChevronDown, ExternalLink, Globe2, Languages,
   Menu, Moon, Play, Search, Sun, X, MapPin, Layers3, BookOpen, GraduationCap
 } from 'lucide-react';
 import PasswordGate from './components/PasswordGate';
@@ -745,6 +745,7 @@ function AtlasSite({ onChoose }) {
   const [theme, setTheme] = useTheme();
   const [lang, setLang, language] = useLanguage();
   const [activeRegion, setActiveRegion] = useState('africa');
+  const dispatchRef = useRef(null);
   const t = getCopy(lang);
   const e = getExperienceCopy(lang);
 
@@ -759,10 +760,10 @@ function AtlasSite({ onChoose }) {
       image: visuals.africa,
       accent: '#f2a057',
       points: [
-        { x: '54%', y: '63%', label: 'Mauritius' },
-        { x: '43%', y: '54%', label: 'The Gambia' },
-        { x: '56%', y: '47%', label: 'Egypt' },
-        { x: '53%', y: '70%', label: 'Madagascar' }
+        { x: '38%', y: '54%', label: 'The Gambia', dx: -74, dy: -18 },
+        { x: '55%', y: '43%', label: 'Egypt', dx: 78, dy: -38 },
+        { x: '54%', y: '70%', label: 'Madagascar', dx: -58, dy: 64 },
+        { x: '60%', y: '66%', label: 'Mauritius', dx: 82, dy: 24 }
       ],
       metrics: [{ value: 4, label: 'ASILI places' }, { value: 4, label: 'craftsmanship countries' }],
       routes: [
@@ -780,9 +781,9 @@ function AtlasSite({ onChoose }) {
       image: visuals.ready,
       accent: '#7fa7f1',
       points: [
-        { x: '49%', y: '31%', label: 'Bucharest' },
-        { x: '47%', y: '35%', label: 'Cinque Terre' },
-        { x: '53%', y: '29%', label: 'Ukraine' }
+        { x: '43%', y: '39%', label: 'Cinque Terre', dx: -82, dy: 58 },
+        { x: '51%', y: '34%', label: 'Bucharest', dx: -8, dy: -62 },
+        { x: '57%', y: '29%', label: 'Ukraine', dx: 86, dy: -18 }
       ],
       metrics: [{ value: 25, label: 'READY professionals' }, { value: 19, label: 'countries in cohort' }],
       routes: [
@@ -800,9 +801,9 @@ function AtlasSite({ onChoose }) {
       image: visuals.cinqueTerre,
       accent: '#6dcab8',
       points: [
-        { x: '71%', y: '38%', label: 'Suzhou' },
-        { x: '76%', y: '34%', label: 'Jeju' },
-        { x: '66%', y: '57%', label: 'Malé' }
+        { x: '69%', y: '39%', label: 'Suzhou', dx: -78, dy: 22 },
+        { x: '77%', y: '33%', label: 'Jeju', dx: 80, dy: -26 },
+        { x: '62%', y: '58%', label: 'Malé', dx: -68, dy: 66 }
       ],
       metrics: [{ value: 3, label: 'featured learning places' }, { value: 1, label: 'shared practice network' }],
       routes: [
@@ -820,9 +821,9 @@ function AtlasSite({ onChoose }) {
       image: visuals.assembly,
       accent: '#e85f49',
       points: [
-        { x: '58%', y: '48%', label: 'Riyadh' },
-        { x: '56%', y: '45%', label: 'Al-Faw' },
-        { x: '54%', y: '49%', label: 'Jeddah' }
+        { x: '51%', y: '50%', label: 'Jeddah', dx: -78, dy: 40 },
+        { x: '55%', y: '45%', label: 'Al-Faw', dx: -64, dy: -50 },
+        { x: '59%', y: '48%', label: 'Riyadh', dx: 82, dy: -6 }
       ],
       metrics: [{ value: 3, label: 'Saudi learning locations' }, { value: 1, label: 'regional programme lens' }],
       routes: [
@@ -840,8 +841,8 @@ function AtlasSite({ onChoose }) {
       image: visuals.africa,
       accent: '#a28bdc',
       points: [
-        { x: '24%', y: '56%', label: 'Latin America' },
-        { x: '23%', y: '48%', label: 'Caribbean' }
+        { x: '25%', y: '46%', label: 'Caribbean', dx: -70, dy: -34 },
+        { x: '29%', y: '59%', label: 'Latin America', dx: 82, dy: 30 }
       ],
       metrics: [{ value: 2, label: 'regional lenses' }, { value: 1, label: 'connected knowledge route' }],
       routes: [
@@ -852,6 +853,15 @@ function AtlasSite({ onChoose }) {
   ];
 
   const active = regions.find((region) => region.id === activeRegion) || regions[0];
+
+  const scrollDispatches = (direction) => {
+    const viewport = dispatchRef.current;
+    if (!viewport) return;
+    viewport.scrollBy({
+      left: direction * Math.max(320, viewport.clientWidth * 0.82),
+      behavior: 'smooth',
+    });
+  };
 
   return (
     <div className="atlas-site">
@@ -902,9 +912,23 @@ function AtlasSite({ onChoose }) {
           <div className="atlas-region-image-shade"/>
           <div className="atlas-map-overlay"/>
           {active.points.map((point) => (
-            <button className="atlas-map-pin" style={{ left: point.x, top: point.y, '--pin-accent': active.accent }} key={point.label}>
-              <i/><span>{point.label}</span>
-            </button>
+            <div
+              className="atlas-geo-marker"
+              style={{ left: point.x, top: point.y, '--pin-accent': active.accent }}
+              key={point.label}
+            >
+              <svg className="atlas-geo-leader" aria-hidden="true">
+                <line x1="0" y1="0" x2={point.dx} y2={point.dy}/>
+              </svg>
+              <i className="atlas-geo-anchor"/>
+              <button
+                className="atlas-geo-label"
+                style={{ transform: `translate(${point.dx}px, ${point.dy}px) translate(-50%, -50%)` }}
+                aria-label={point.label}
+              >
+                {point.label}
+              </button>
+            </div>
           ))}
           <div className="atlas-map-caption">
             <Globe2 size={17}/><span>Selected region</span><strong>{active.name}</strong>
@@ -928,21 +952,30 @@ function AtlasSite({ onChoose }) {
       </section>
 
       <section className="atlas-dispatches">
-        <div className="atlas-dispatch-heading" data-reveal>
-          <p className="eyebrow">Current dispatches</p>
-          <h2>What is happening<br/>where.</h2>
+        <div className="atlas-dispatch-top">
+          <div className="atlas-dispatch-heading" data-reveal>
+            <p className="eyebrow">Current dispatches</p>
+            <h2>What is happening<br/>where.</h2>
+          </div>
+          <div className="atlas-dispatch-controls" aria-label="Dispatch carousel controls">
+            <button onClick={() => scrollDispatches(-1)} aria-label="Previous dispatches"><ArrowLeft size={20}/></button>
+            <button onClick={() => scrollDispatches(1)} aria-label="Next dispatches"><ArrowRight size={20}/></button>
+          </div>
         </div>
-        <div className="atlas-dispatch-track">
-          {news.slice(0,5).map((item,index) => (
-            <a className="atlas-dispatch-card" href={item.link} target="_blank" rel="noreferrer" key={item.id} data-reveal>
-              <div className="atlas-dispatch-visual"><img src={projectVisuals[index % projectVisuals.length]} alt="" loading="lazy"/><span>0{index+1}</span></div>
-              <small>{item.region} · {item.date}</small>
-              <h3>{item.title}</h3>
-              <p>{item.summary}</p>
-              <strong>Open dispatch <ArrowRight size={15}/></strong>
-            </a>
-          ))}
+        <div className="atlas-dispatch-viewport" ref={dispatchRef}>
+          <div className="atlas-dispatch-track">
+            {news.slice(0,5).map((item,index) => (
+              <a className="atlas-dispatch-card" href={item.link} target="_blank" rel="noreferrer" key={item.id} data-reveal>
+                <div className="atlas-dispatch-visual"><img src={projectVisuals[index % projectVisuals.length]} alt="" loading="lazy"/><span>0{index+1}</span></div>
+                <small>{item.region} · {item.date}</small>
+                <h3>{item.title}</h3>
+                <p>{item.summary}</p>
+                <strong>Open dispatch <ArrowRight size={15}/></strong>
+              </a>
+            ))}
+          </div>
         </div>
+        <div className="atlas-dispatch-hint"><span>Drag to explore</span><i/></div>
       </section>
 
       <section className="atlas-route-table">
