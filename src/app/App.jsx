@@ -744,97 +744,232 @@ function ExperienceChooser({ onSelect }) {
 function AtlasSite({ onChoose }) {
   const [theme, setTheme] = useTheme();
   const [lang, setLang, language] = useLanguage();
+  const [activeRegion, setActiveRegion] = useState('africa');
   const t = getCopy(lang);
   const e = getExperienceCopy(lang);
+
   const regions = [
-    { name: 'Africa', count: 4, x: '47%', y: '62%' },
-    { name: 'Europe', count: 3, x: '50%', y: '32%' },
-    { name: 'Asia-Pacific', count: 5, x: '71%', y: '46%' },
-    { name: 'Arab States', count: 3, x: '57%', y: '48%' },
-    { name: 'Americas', count: 2, x: '23%', y: '44%' },
+    {
+      id: 'africa',
+      index: '01',
+      name: 'Africa',
+      short: 'Climate · craftsmanship · livelihoods',
+      title: 'Heritage as climate action and opportunity.',
+      text: 'ASILI connects community knowledge, climate resilience and heritage across culturally significant places, while ICCROM’s craftsmanship initiative links conservation skills with employment and local economies.',
+      image: visuals.africa,
+      accent: '#f2a057',
+      points: [
+        { x: '54%', y: '63%', label: 'Mauritius' },
+        { x: '43%', y: '54%', label: 'The Gambia' },
+        { x: '56%', y: '47%', label: 'Egypt' },
+        { x: '53%', y: '70%', label: 'Madagascar' }
+      ],
+      metrics: [{ value: 4, label: 'ASILI places' }, { value: 4, label: 'craftsmanship countries' }],
+      routes: [
+        { type: 'Project', title: 'ASILI — Heritage for Climate Action in Africa', meta: 'Mauritius · The Gambia · Egypt · Madagascar', link: 'https://www.iccrom.org/programmes/first-aid-and-resilience-times-crisis-far/projects' },
+        { type: 'Programme', title: 'Transformative Capacity Building for African Craftsmanship', meta: 'Côte d’Ivoire · Egypt · Kenya · Tunisia', link: 'https://www.iccrom.org/programmes/towards-sustainable-development-africa-transformative-capacity-building-advance' }
+      ]
+    },
+    {
+      id: 'europe',
+      index: '02',
+      name: 'Europe',
+      short: 'Risk · resilience · place-based learning',
+      title: 'Preparing heritage for uncertain futures.',
+      text: 'READY builds a network of cultural first aiders and risk managers, while place-based learning connects conservation practice directly to living landscapes and institutions.',
+      image: visuals.ready,
+      accent: '#7fa7f1',
+      points: [
+        { x: '49%', y: '31%', label: 'Bucharest' },
+        { x: '47%', y: '35%', label: 'Cinque Terre' },
+        { x: '53%', y: '29%', label: 'Ukraine' }
+      ],
+      metrics: [{ value: 25, label: 'READY professionals' }, { value: 19, label: 'countries in cohort' }],
+      routes: [
+        { type: 'Course', title: 'READY Track 2', meta: 'Bucharest · hybrid learning', link: 'https://www.iccrom.org/programmes/first-aid-and-resilience-times-crisis-far/news' },
+        { type: 'Learning route', title: 'People–Nature–Culture in the Cinque Terre', meta: 'Italy · World Heritage', link: 'https://www.iccrom.org/programmes/world-heritage-leadership-whl' }
+      ]
+    },
+    {
+      id: 'asia',
+      index: '03',
+      name: 'Asia-Pacific',
+      short: 'World Heritage · learning networks · collections',
+      title: 'Learning moves between places.',
+      text: 'From Suzhou to Jeju and the Maldives, ICCROM’s World Heritage Leadership work turns heritage places into learning environments and connects practitioners across the region.',
+      image: visuals.cinqueTerre,
+      accent: '#6dcab8',
+      points: [
+        { x: '71%', y: '38%', label: 'Suzhou' },
+        { x: '76%', y: '34%', label: 'Jeju' },
+        { x: '66%', y: '57%', label: 'Malé' }
+      ],
+      metrics: [{ value: 3, label: 'featured learning places' }, { value: 1, label: 'shared practice network' }],
+      routes: [
+        { type: 'Programme', title: 'World Heritage Leadership', meta: 'People · nature · culture', link: 'https://www.iccrom.org/programmes/world-heritage-leadership-whl' },
+        { type: 'Course', title: 'Managing Multi-Internationally Designated Areas effectively', meta: 'Jeju · Republic of Korea', link: 'https://www.iccrom.org/programmes/world-heritage-leadership-whl/courses' }
+      ]
+    },
+    {
+      id: 'arab',
+      index: '04',
+      name: 'Arab States',
+      short: 'Archaeology · built heritage · regional capacity',
+      title: 'Regional expertise, shared at scale.',
+      text: 'ICCROM supports conservation practice across the Arab region through ATHAR, archaeological conservation training and regional networks that connect policy, sites and professionals.',
+      image: visuals.assembly,
+      accent: '#e85f49',
+      points: [
+        { x: '58%', y: '48%', label: 'Riyadh' },
+        { x: '56%', y: '45%', label: 'Al-Faw' },
+        { x: '54%', y: '49%', label: 'Jeddah' }
+      ],
+      metrics: [{ value: 3, label: 'Saudi learning locations' }, { value: 1, label: 'regional programme lens' }],
+      routes: [
+        { type: 'Programme', title: 'ATHAR — Architectural Archaeological Tangible Heritage', meta: 'Arab Region', link: 'https://www.iccrom.org/programmes' },
+        { type: 'Course', title: 'Conservation of Archaeological Sites', meta: 'Riyadh · Al-Faw · Jeddah · Hail', link: 'https://www.iccrom.org/programmes/world-heritage-leadership-whl/courses' }
+      ]
+    },
+    {
+      id: 'lac',
+      index: '05',
+      name: 'Latin America & Caribbean',
+      short: 'Management · participation · regional exchange',
+      title: 'A regional lens for shared heritage challenges.',
+      text: 'ICCROM’s regional heritage-management work creates a framework for practitioners and institutions to exchange methods, strengthen management and connect local practice to global knowledge.',
+      image: visuals.africa,
+      accent: '#a28bdc',
+      points: [
+        { x: '24%', y: '56%', label: 'Latin America' },
+        { x: '23%', y: '48%', label: 'Caribbean' }
+      ],
+      metrics: [{ value: 2, label: 'regional lenses' }, { value: 1, label: 'connected knowledge route' }],
+      routes: [
+        { type: 'Programme', title: 'Heritage Management in Latin America and the Caribbean', meta: 'LAC regional programme', link: 'https://www.iccrom.org/programmes' },
+        { type: 'Resource', title: 'Impact assessment and management guidance', meta: 'Multilingual knowledge', link: 'https://www.iccrom.org/resources/publications' }
+      ]
+    }
   ];
+
+  const active = regions.find((region) => region.id === activeRegion) || regions[0];
 
   return (
     <div className="atlas-site">
       <ReplayReveal/>
       <ScrollProgress/>
+
       <header className="alt-header atlas-header">
         <a className="alt-brand" href="#atlas-top"><img src={BRAND_LOGO} alt="ICCROM"/><span>Atlas</span></a>
+        <div className="atlas-header-caption">Explore ICCROM by place</div>
         <ExperienceTools {...{ theme, setTheme, lang, setLang, language, onChoose, label: e.chooseAnother }}/>
       </header>
 
-      <section className="atlas-hero" id="atlas-top">
-        <div className="atlas-hero-copy" data-reveal>
-          <p className="eyebrow">ICCROM / Global network / 139 Member States</p>
-          <h1>{e.atlasTitle}</h1>
-          <p>{e.atlasLead}</p>
-          <div className="atlas-hero-stats">
-            <div><strong><AnimatedNumber value={139}/></strong><span>Member States</span></div>
-            <div><strong><AnimatedNumber value={6}/></strong><span>World regions</span></div>
-            <div><strong><AnimatedNumber value={70} prefix="~"/></strong><span>Years of action</span></div>
-          </div>
-        </div>
-
-        <div className="atlas-globe" data-reveal aria-label="Conceptual global ICCROM map">
-          <div className="atlas-grid-lines"/>
-          <div className="globe-ring g1"/><div className="globe-ring g2"/><div className="globe-ring g3"/>
-          <div className="globe-land land-a"/><div className="globe-land land-b"/><div className="globe-land land-c"/>
+      <section className="atlas-stage" id="atlas-top">
+        <aside className="atlas-region-rail" aria-label="Regions">
+          <span className="atlas-rail-label">Regions</span>
           {regions.map((region) => (
-            <div className="region-pin" key={region.name} style={{ left: region.x, top: region.y }}>
-              <i/><span>{region.name}</span><b>{region.count}</b>
-            </div>
+            <button key={region.id} className={active.id === region.id ? 'active' : ''} onClick={() => setActiveRegion(region.id)}>
+              <span>{region.index}</span><strong>{region.name}</strong>
+            </button>
           ))}
-          <div className="globe-center-label"><Globe2/><strong>ICCROM</strong><span>Rome · Italy</span></div>
+        </aside>
+
+        <div className="atlas-stage-copy" key={active.id}>
+          <p className="eyebrow">{active.short}</p>
+          <h1>{active.name}</h1>
+          <h2>{active.title}</h2>
+          <p>{active.text}</p>
+          <div className="atlas-active-metrics">
+            {active.metrics.map((metric) => (
+              <div key={metric.label}><strong><AnimatedNumber value={metric.value}/></strong><span>{metric.label}</span></div>
+            ))}
+          </div>
+          <div className="atlas-active-routes">
+            {active.routes.map((route) => (
+              <a href={route.link} target="_blank" rel="noreferrer" key={route.title}>
+                <span>{route.type}</span><strong>{route.title}</strong><small>{route.meta}</small><ArrowRight size={16}/>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="atlas-map-panel" data-reveal>
+          <div className="atlas-map-grid" aria-hidden="true"/>
+          <div className="atlas-world-shape" aria-hidden="true">
+            <i className="continent c-na"/><i className="continent c-sa"/><i className="continent c-eu"/><i className="continent c-af"/><i className="continent c-as"/><i className="continent c-au"/>
+          </div>
+          <img className="atlas-region-image" src={active.image} alt="" key={active.image}/>
+          <div className="atlas-region-image-shade"/>
+          <div className="atlas-map-overlay"/>
+          {active.points.map((point) => (
+            <button className="atlas-map-pin" style={{ left: point.x, top: point.y, '--pin-accent': active.accent }} key={point.label}>
+              <i/><span>{point.label}</span>
+            </button>
+          ))}
+          <div className="atlas-map-caption">
+            <Globe2 size={17}/><span>Selected region</span><strong>{active.name}</strong>
+          </div>
         </div>
       </section>
 
-      <section className="atlas-region-band">
-        {regions.map((region, index) => <div key={region.name}><span>0{index + 1}</span><strong>{region.name}</strong><small>{region.count} featured initiatives</small></div>)}
+      <section className="atlas-world-index">
+        <div className="atlas-index-copy" data-reveal>
+          <p className="eyebrow">A different navigation model</p>
+          <h2>Start with a place.<br/>Discover the ecosystem.</h2>
+          <p>Atlas treats geography as the first navigation layer. A country or region becomes the doorway to projects, learning, publications and current stories.</p>
+        </div>
+        <div className="atlas-index-list">
+          {regions.map((region) => (
+            <button key={region.id} onClick={() => { setActiveRegion(region.id); document.getElementById('atlas-top')?.scrollIntoView({ behavior: 'smooth' }); }}>
+              <span>{region.index}</span><strong>{region.name}</strong><small>{region.short}</small><ArrowDownRight/>
+            </button>
+          ))}
+        </div>
       </section>
 
-      <section className="atlas-projects">
-        <div className="atlas-section-title" data-reveal>
-          <p className="eyebrow">Projects by place</p>
-          <h2>From a global network<br/>to local action.</h2>
-          <p>{t.projectsLead}</p>
+      <section className="atlas-dispatches">
+        <div className="atlas-dispatch-heading" data-reveal>
+          <p className="eyebrow">Current dispatches</p>
+          <h2>What is happening<br/>where.</h2>
         </div>
-        <div className="atlas-project-list">
-          {projects.map((project, index) => (
-            <a href={project.link} target="_blank" rel="noreferrer" className="atlas-project-row" key={project.id} data-reveal>
-              <span className="atlas-row-no">0{index + 1}</span>
-              <div className="atlas-row-image"><img src={projectVisuals[index % projectVisuals.length]} alt="" loading="lazy"/></div>
-              <div><small>{project.region} · {project.direction}</small><h3>{project.title}</h3><p>{project.short}</p></div>
-              <div className="atlas-row-metric"><strong>{project.metric}</strong><ArrowRight/></div>
+        <div className="atlas-dispatch-track">
+          {news.slice(0,5).map((item,index) => (
+            <a className="atlas-dispatch-card" href={item.link} target="_blank" rel="noreferrer" key={item.id} data-reveal>
+              <div className="atlas-dispatch-visual"><img src={projectVisuals[index % projectVisuals.length]} alt="" loading="lazy"/><span>0{index+1}</span></div>
+              <small>{item.region} · {item.date}</small>
+              <h3>{item.title}</h3>
+              <p>{item.summary}</p>
+              <strong>Open dispatch <ArrowRight size={15}/></strong>
             </a>
           ))}
         </div>
       </section>
 
-      <section className="atlas-field-notes">
-        <div className="atlas-section-title light" data-reveal>
-          <p className="eyebrow">Field notes / current work</p>
-          <h2>What is moving<br/>around the world.</h2>
+      <section className="atlas-route-table">
+        <div data-reveal>
+          <p className="eyebrow">Global routes</p>
+          <h2>Programmes that cross borders.</h2>
         </div>
-        <div className="atlas-note-grid">
-          {news.slice(0,4).map((item,index) => (
-            <a href={item.link} target="_blank" rel="noreferrer" key={item.id} className="atlas-note" data-reveal>
-              <span>0{index+1} · {item.date}</span><h3>{item.title}</h3><p>{item.summary}</p><strong>{item.region}<ArrowRight size={15}/></strong>
+        <div className="atlas-route-lines">
+          {projects.slice(0,6).map((project,index) => (
+            <a href={project.link} target="_blank" rel="noreferrer" key={project.id} data-reveal>
+              <span>0{index+1}</span><strong>{project.title}</strong><small>{project.region}</small><small>{project.theme}</small><ArrowRight size={17}/>
             </a>
           ))}
         </div>
       </section>
 
-      <section className="atlas-knowledge">
-        <div data-reveal><p className="eyebrow">Knowledge across borders</p><h2>{t.publications}</h2></div>
-        <div className="atlas-knowledge-columns">
-          <div>
-            <span>Publications</span>
-            {publications.slice(0,3).map(item => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"><strong>{item.title}</strong><small>{item.year} · {item.type}</small></a>)}
-          </div>
-          <div>
-            <span>Learning</span>
-            {courses.map(item => <article key={item.id}><strong>{item.title}</strong><small>{item.date} · {item.place}</small></article>)}
-          </div>
+      <section className="atlas-knowledge-dock">
+        <div className="atlas-dock-heading" data-reveal>
+          <p className="eyebrow">Knowledge without borders</p>
+          <h2>{t.publications}</h2>
+        </div>
+        <div className="atlas-dock-grid">
+          {publications.slice(0,4).map((item,index) => (
+            <a key={item.id} href={item.link} target="_blank" rel="noreferrer" className="atlas-dock-item" data-reveal>
+              <span>0{index+1}</span><div><small>{item.type} · {item.year}</small><strong>{item.title}</strong></div><ExternalLink size={15}/>
+            </a>
+          ))}
         </div>
       </section>
 
@@ -846,98 +981,180 @@ function AtlasSite({ onChoose }) {
 function WeaveSite({ onChoose }) {
   const [theme, setTheme] = useTheme();
   const [lang, setLang, language] = useLanguage();
-  const [selectedId, setSelectedId] = useState(projects[0].id);
+  const [lens, setLens] = useState('climate');
   const t = getCopy(lang);
   const e = getExperienceCopy(lang);
-  const selected = projects.find((item) => item.id === selectedId) || projects[0];
-  const relatedNews = news.filter(item => selected.related?.includes(item.id));
-  const relatedPublications = publications.filter(item => selected.related?.includes(item.id));
-  const relatedCourses = courses.filter(item => selected.related?.includes(item.id));
+
+  const lenses = [
+    {
+      id: 'climate',
+      index: '01',
+      label: 'Climate',
+      title: 'Heritage can be part of the climate response.',
+      text: 'Follow one theme across programme work, field projects, publications and community knowledge.',
+      colour: '#6dcab8',
+      core: 'ASILI',
+      nodes: [
+        { type: 'Programme', title: 'First Aid and Resilience (FAR)', meta: 'Climate · crisis · resilience', link: 'https://www.iccrom.org/programmes/first-aid-and-resilience-times-crisis-far' },
+        { type: 'Project', title: 'ASILI', meta: 'Four culturally significant places in Africa', link: 'https://www.iccrom.org/programmes/first-aid-and-resilience-times-crisis-far/projects' },
+        { type: 'Story', title: 'Sacred mountains, rice terraces and historic forts', meta: '22 Sep 2026', link: 'https://www.iccrom.org/news-events/news' },
+        { type: 'Knowledge', title: 'Net Zero: Heritage for Climate Action', meta: 'Practice and implementation research', link: 'https://www.iccrom.org/resources/publications' },
+        { type: 'Place', title: 'Mauritius · The Gambia · Egypt · Madagascar', meta: 'Community knowledge in context', link: 'https://www.iccrom.org/news-events/news' }
+      ]
+    },
+    {
+      id: 'crisis',
+      index: '02',
+      label: 'Crisis',
+      title: 'Preparedness is a network, not a document.',
+      text: 'Move from a risk challenge to training, people and field practice without losing the context that connects them.',
+      colour: '#e85f49',
+      core: 'READY',
+      nodes: [
+        { type: 'Programme', title: 'First Aid and Resilience (FAR)', meta: 'Crisis preparedness', link: 'https://www.iccrom.org/programmes/first-aid-and-resilience-times-crisis-far' },
+        { type: 'Project', title: 'READY Track 2', meta: '25 professionals · 19 countries', link: 'https://www.iccrom.org/programmes/first-aid-and-resilience-times-crisis-far/news' },
+        { type: 'Learning', title: 'Safeguarding heritage cities, sites and traditions', meta: 'Hybrid capacity building', link: 'https://www.iccrom.org/courses' },
+        { type: 'Network', title: 'Cultural first aiders and risk managers', meta: 'European professional network', link: 'https://www.iccrom.org/programmes/first-aid-and-resilience-times-crisis-far/news' },
+        { type: 'Place', title: 'Bucharest · Romania', meta: 'In-person training stage', link: 'https://www.iccrom.org/news-events/news' }
+      ]
+    },
+    {
+      id: 'world',
+      index: '03',
+      label: 'World Heritage',
+      title: 'Management knowledge should travel with the place.',
+      text: 'World Heritage Leadership connects places, practitioners, courses and guidance into a continuous learning system.',
+      colour: '#2768e8',
+      core: 'WHL',
+      nodes: [
+        { type: 'Programme', title: 'World Heritage Leadership', meta: 'ICCROM · IUCN · partners', link: 'https://www.iccrom.org/programmes/world-heritage-leadership-whl' },
+        { type: 'Publication', title: 'Managing World Heritage', meta: '2026 foundational manual', link: 'https://www.iccrom.org/resources/publications' },
+        { type: 'Learning', title: 'Managing Multi-Internationally Designated Areas', meta: 'Jeju · Republic of Korea', link: 'https://www.iccrom.org/programmes/world-heritage-leadership-whl/courses' },
+        { type: 'Story', title: 'World Heritage through a place-based lens in Suzhou', meta: '2026', link: 'https://www.iccrom.org/programmes/world-heritage-leadership-whl' },
+        { type: 'Resource', title: 'Enhancing Our Heritage Toolkit 2.0', meta: 'Management effectiveness', link: 'https://www.iccrom.org/programmes/world-heritage-leadership-whl/resources' }
+      ]
+    },
+    {
+      id: 'digital',
+      index: '04',
+      label: 'Digital',
+      title: 'Digital heritage needs a living knowledge layer.',
+      text: 'Connect research, practical tools, conversations and emerging technology without making people search across isolated programme pages.',
+      colour: '#a28bdc',
+      core: 'Ctrl+S',
+      nodes: [
+        { type: 'Programme', title: 'Sustaining Digital Heritage', meta: 'Preserve · access · creative use', link: 'https://www.iccrom.org/programmes/sustaining-digital-heritage' },
+        { type: 'Story', title: 'Ctrl+S Culture: AI and Heritage in a Digital World', meta: 'Conference wrap-up · Jan 2026', link: 'https://www.iccrom.org/programmes/sustaining-digital-heritage/news' },
+        { type: 'Tool', title: 'The Sustainability Test', meta: 'Digital sustainability self-assessment', link: 'https://www.iccrom.org/programmes/sustaining-digital-heritage/resources' },
+        { type: 'Research', title: 'The Digital Imperative', meta: 'Research findings & opportunity assessment', link: 'https://www.iccrom.org/programmes/sustaining-digital-heritage/resources' },
+        { type: 'Book', title: 'Unlocking Sound and Image Heritage', meta: 'SOIMA knowledge resource', link: 'https://www.iccrom.org/programmes/sustaining-digital-heritage/resources' }
+      ]
+    }
+  ];
+
+  const active = lenses.find((item) => item.id === lens) || lenses[0];
 
   return (
     <div className="weave-site">
       <ReplayReveal/>
       <ScrollProgress/>
-      <header className="alt-header weave-header">
-        <a className="alt-brand" href="#weave-top"><img src={BRAND_LOGO} alt="ICCROM"/><span>Weave</span></a>
+
+      <header className="weave-commandbar">
+        <a className="weave-brand" href="#weave-top"><img src={BRAND_LOGO} alt="ICCROM"/><span>Weave</span></a>
+        <div className="weave-command-search"><Search size={16}/><span>Navigate by connection, not hierarchy</span></div>
         <ExperienceTools {...{ theme, setTheme, lang, setLang, language, onChoose, label: e.chooseAnother }}/>
       </header>
 
-      <section className="weave-hero" id="weave-top">
-        <div className="weave-hero-copy" data-reveal>
-          <p className="eyebrow">Projects / knowledge / learning / places</p>
-          <h1>{e.weaveTitle}</h1>
-          <p>{e.weaveLead}</p>
-          <a className="cta dark" href="#weave-network">{t.explore}<ArrowDownRight/></a>
-        </div>
-
-        <div className="weave-hero-graph" data-reveal aria-hidden="true">
-          <span className="hero-thread ht1"/><span className="hero-thread ht2"/><span className="hero-thread ht3"/><span className="hero-thread ht4"/><span className="hero-thread ht5"/>
-          <div className="hero-node hn-core"><Layers3/><strong>Project</strong></div>
-          <div className="hero-node hn-1"><BookOpen/><span>Publication</span></div>
-          <div className="hero-node hn-2"><GraduationCap/><span>Learning</span></div>
-          <div className="hero-node hn-3"><Globe2/><span>Place</span></div>
-          <div className="hero-node hn-4"><span>News</span></div>
-          <div className="hero-node hn-5"><span>Priority</span></div>
-        </div>
-      </section>
-
-      <section className="weave-network" id="weave-network">
-        <div className="weave-selector" data-reveal>
-          <p className="eyebrow">Choose a project node</p>
-          <h2>Follow the thread.</h2>
-          <div className="weave-project-tabs">
-            {projects.map((project,index) => (
-              <button key={project.id} className={selected.id === project.id ? 'active' : ''} onClick={() => setSelectedId(project.id)}>
-                <span>0{index+1}</span><strong>{project.title}</strong><small>{project.region} · {project.theme}</small>
+      <section className="weave-workspace" id="weave-top">
+        <aside className="weave-lens-rail">
+          <p className="eyebrow">Choose a lens</p>
+          <div className="weave-lens-buttons">
+            {lenses.map((item) => (
+              <button key={item.id} className={active.id === item.id ? 'active' : ''} onClick={() => setLens(item.id)} style={{ '--lens-colour': item.colour }}>
+                <span>{item.index}</span><strong>{item.label}</strong>
               </button>
+            ))}
+          </div>
+          <div className="weave-lens-note">
+            <Layers3 size={17}/><p>Every lens reorganizes the same content graph around a different user need.</p>
+          </div>
+        </aside>
+
+        <div className="weave-graph-stage" key={active.id}>
+          <div className="weave-graph-heading">
+            <p className="eyebrow">Knowledge lens / {active.label}</p>
+            <h1>{active.title}</h1>
+            <p>{active.text}</p>
+          </div>
+
+          <div className="weave-live-graph" style={{ '--lens-colour': active.colour }} aria-label={'Connected content for ' + active.label}>
+            <div className="weave-grid-bg"/>
+            <span className="weave-edge we1"/><span className="weave-edge we2"/><span className="weave-edge we3"/><span className="weave-edge we4"/><span className="weave-edge we5"/>
+            <div className="weave-core-node"><small>Current lens</small><strong>{active.core}</strong><span>{active.label}</span></div>
+            {active.nodes.map((node,index) => (
+              <a href={node.link} target="_blank" rel="noreferrer" className={'weave-live-node node-pos-' + (index+1)} key={node.title}>
+                <span>{node.type}</span><strong>{node.title}</strong><small>{node.meta}</small><ArrowRight size={14}/>
+              </a>
             ))}
           </div>
         </div>
 
-        <div className="weave-detail" data-reveal>
-          <div className="weave-detail-main">
-            <span>{selected.direction} · {selected.region}</span>
-            <h3>{selected.title}</h3>
-            <p>{selected.short}</p>
-            <strong>{selected.metric}</strong>
+        <aside className="weave-inspector">
+          <span className="weave-inspector-label">Thread inspector</span>
+          <h2>{active.label}</h2>
+          <p>{active.text}</p>
+          <div className="weave-inspector-list">
+            {active.nodes.map((node,index) => (
+              <a key={node.title} href={node.link} target="_blank" rel="noreferrer">
+                <span>0{index+1}</span><div><small>{node.type}</small><strong>{node.title}</strong></div>
+              </a>
+            ))}
           </div>
-          <div className="weave-relations">
-            <article className="relation-card rc-publication"><BookOpen/><span>Publications</span>{relatedPublications.length ? relatedPublications.map(item => <strong key={item.id}>{item.title}</strong>) : <strong>Connected guidance & resources</strong>}</article>
-            <article className="relation-card rc-news"><span>News</span>{relatedNews.length ? relatedNews.map(item => <strong key={item.id}>{item.title}</strong>) : <strong>Latest programme stories</strong>}</article>
-            <article className="relation-card rc-course"><GraduationCap/><span>Learning</span>{relatedCourses.length ? relatedCourses.map(item => <strong key={item.id}>{item.title}</strong>) : <strong>Related capacity building</strong>}</article>
-            <article className="relation-card rc-place"><Globe2/><span>Places</span><strong>{selected.countries.join(' · ')}</strong></article>
-            <article className="relation-card rc-priority"><Layers3/><span>Strategic context</span><strong>{selected.direction} · {selected.theme}</strong></article>
+        </aside>
+      </section>
+
+      <section className="weave-principle">
+        <div className="weave-principle-heading" data-reveal>
+          <p className="eyebrow">Information architecture as experience</p>
+          <h2>One item can belong<br/>to many stories.</h2>
+          <p>Instead of forcing content into a single tree, Weave exposes the relationships Directus can model underneath the site.</p>
+        </div>
+        <div className="weave-principle-demo" data-reveal>
+          <div className="weave-demo-item demo-project"><span>Project</span><strong>ASILI</strong></div>
+          <div className="weave-demo-line dl1"/><div className="weave-demo-line dl2"/><div className="weave-demo-line dl3"/><div className="weave-demo-line dl4"/>
+          <div className="weave-demo-item demo-publication"><BookOpen/><span>Resource</span><strong>Climate knowledge</strong></div>
+          <div className="weave-demo-item demo-place"><Globe2/><span>Place</span><strong>Madagascar</strong></div>
+          <div className="weave-demo-item demo-news"><span>Story</span><strong>Community knowledge</strong></div>
+          <div className="weave-demo-item demo-priority"><Layers3/><span>Priority</span><strong>Risk & resilience</strong></div>
+        </div>
+      </section>
+
+      <section className="weave-streams">
+        <div className="weave-stream-heading" data-reveal>
+          <p className="eyebrow">Three ways into the same knowledge</p>
+          <h2>Browse by what<br/>you need.</h2>
+        </div>
+        <div className="weave-stream-columns">
+          <div className="weave-stream-column">
+            <span>01 / Learn</span>
+            {courses.map((item) => <article key={item.id}><small>{item.date} · {item.place}</small><strong>{item.title}</strong><p>{item.text}</p></article>)}
+          </div>
+          <div className="weave-stream-column">
+            <span>02 / Read</span>
+            {publications.slice(0,4).map((item) => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"><small>{item.year} · {item.type}</small><strong>{item.title}</strong><p>{item.text}</p></a>)}
+          </div>
+          <div className="weave-stream-column">
+            <span>03 / Follow</span>
+            {news.slice(0,4).map((item) => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"><small>{item.date} · {item.region}</small><strong>{item.title}</strong><p>{item.summary}</p></a>)}
           </div>
         </div>
       </section>
 
-      <section className="weave-threads">
-        <div className="weave-thread-heading" data-reveal>
-          <p className="eyebrow">Knowledge threads</p>
-          <h2>One content layer.<br/>Many ways in.</h2>
-        </div>
-        <div className="thread-columns">
-          <div className="thread-column">
-            <span>01 / Publications</span>
-            {publications.map(item => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"><small>{item.year}</small><strong>{item.title}</strong></a>)}
-          </div>
-          <div className="thread-column">
-            <span>02 / Learning</span>
-            {courses.map(item => <article key={item.id}><small>{item.date}</small><strong>{item.title}</strong></article>)}
-          </div>
-          <div className="thread-column">
-            <span>03 / Stories</span>
-            {news.slice(0,4).map(item => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"><small>{item.date}</small><strong>{item.title}</strong></a>)}
-          </div>
-        </div>
-      </section>
-
-      <section className="weave-impact">
-        <div><strong><AnimatedNumber value={139}/></strong><span>Member States connected</span></div>
-        <div><strong><AnimatedNumber value={9}/></strong><span>Priority Areas connected</span></div>
-        <div><strong><AnimatedNumber value={6}/></strong><span>Featured project nodes</span></div>
-        <div><strong><AnimatedNumber value={4}/></strong><span>Knowledge types connected</span></div>
+      <section className="weave-count-band">
+        <div><strong><AnimatedNumber value={139}/></strong><span>Member States</span></div>
+        <div><strong><AnimatedNumber value={9}/></strong><span>Priority Areas</span></div>
+        <div><strong><AnimatedNumber value={4}/></strong><span>Knowledge lenses</span></div>
+        <div><strong>∞</strong><span>Possible connections</span></div>
       </section>
 
       <Footer t={t}/>
