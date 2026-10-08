@@ -29,21 +29,28 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Derive preview password hash
+      - name: Derive preview password hashes
         id: password
         shell: bash
         env:
           PASSWORD_UI: ${{ secrets.password_ui }}
+          PASSWORD_UI_2: ${{ secrets.password_ui_2 }}
         run: |
           if [ -z "$PASSWORD_UI" ]; then
             echo "The password_ui repository secret is required." >&2
             exit 1
           fi
+          if [ -z "$PASSWORD_UI_2" ]; then
+            echo "The password_ui_2 repository secret is required." >&2
+            exit 1
+          fi
           echo "hash=$(printf '%s' "$PASSWORD_UI" | sha256sum | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          echo "hash_2=$(printf '%s' "$PASSWORD_UI_2" | sha256sum | awk '{print $1}')" >> "$GITHUB_OUTPUT"
 
       - name: Build static site
         env:
           VITE_UI_PASSWORD_HASH: ${{ steps.password.outputs.hash }}
+          VITE_UI_PASSWORD_HASH_2: ${{ steps.password.outputs.hash_2 }}
         run: npm run build
 
       - name: Setup Pages
