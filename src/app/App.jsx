@@ -978,6 +978,123 @@ function AtlasSite({ onChoose }) {
   );
 }
 
+function WeaveRelationshipDiagram() {
+  const containerRef = useRef(null);
+  const coreRef = useRef(null);
+  const publicationRef = useRef(null);
+  const placeRef = useRef(null);
+  const newsRef = useRef(null);
+  const priorityRef = useRef(null);
+  const [connections, setConnections] = useState([]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const core = coreRef.current;
+    const targets = [
+      { id: 'publication', ref: publicationRef },
+      { id: 'place', ref: placeRef },
+      { id: 'news', ref: newsRef },
+      { id: 'priority', ref: priorityRef },
+    ];
+
+    if (!container || !core || targets.some(({ ref }) => !ref.current)) return;
+
+    let frame = 0;
+
+    const recalculate = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const containerRect = container.getBoundingClientRect();
+        const coreRectRaw = core.getBoundingClientRect();
+
+        const rectInContainer = (rect) => ({
+          left: rect.left - containerRect.left,
+          top: rect.top - containerRect.top,
+          width: rect.width,
+          height: rect.height,
+          right: rect.right - containerRect.left,
+          bottom: rect.bottom - containerRect.top,
+        });
+
+        const coreRect = rectInContainer(coreRectRaw);
+        const center = {
+          x: coreRect.left + coreRect.width / 2,
+          y: coreRect.top + coreRect.height / 2,
+        };
+        const radius = Math.min(coreRect.width, coreRect.height) / 2;
+
+        const next = targets.map(({ id, ref }) => {
+          const targetRect = rectInContainer(ref.current.getBoundingClientRect());
+          const targetCenter = {
+            x: targetRect.left + targetRect.width / 2,
+            y: targetRect.top + targetRect.height / 2,
+          };
+
+          const dx = targetCenter.x - center.x;
+          const dy = targetCenter.y - center.y;
+          const distance = Math.hypot(dx, dy) || 1;
+          const ux = dx / distance;
+          const uy = dy / distance;
+
+          const start = {
+            x: center.x + ux * radius,
+            y: center.y + uy * radius,
+          };
+
+          const vx = center.x - targetCenter.x;
+          const vy = center.y - targetCenter.y;
+          const halfW = targetRect.width / 2;
+          const halfH = targetRect.height / 2;
+          const sx = Math.abs(vx) > 0.001 ? halfW / Math.abs(vx) : Number.POSITIVE_INFINITY;
+          const sy = Math.abs(vy) > 0.001 ? halfH / Math.abs(vy) : Number.POSITIVE_INFINITY;
+          const scale = Math.min(sx, sy);
+
+          const end = {
+            x: targetCenter.x + vx * scale,
+            y: targetCenter.y + vy * scale,
+          };
+
+          return { id, x1: start.x, y1: start.y, x2: end.x, y2: end.y };
+        });
+
+        setConnections(next);
+      });
+    };
+
+    const observer = new ResizeObserver(recalculate);
+    [container, core, ...targets.map(({ ref }) => ref.current)].forEach((node) => observer.observe(node));
+    window.addEventListener('resize', recalculate);
+    document.fonts?.ready?.then(recalculate);
+    recalculate();
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener('resize', recalculate);
+    };
+  }, []);
+
+  return (
+    <div className="weave-principle-demo weave-dynamic-demo" ref={containerRef} data-reveal>
+      <div className="weave-demo-orbit" aria-hidden="true"/>
+      <svg className="weave-dynamic-lines" aria-hidden="true">
+        {connections.map((line) => (
+          <g key={line.id}>
+            <line x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}/>
+            <circle className="weave-connection-dot weave-connection-dot-start" cx={line.x1} cy={line.y1} r="3.5"/>
+            <circle className="weave-connection-dot weave-connection-dot-end" cx={line.x2} cy={line.y2} r="5"/>
+          </g>
+        ))}
+      </svg>
+      <div className="weave-demo-item demo-project" ref={coreRef}><span>Project</span><strong>ASILI</strong><small>4 active relationships</small></div>
+      <div className="weave-demo-item demo-publication" ref={publicationRef}><BookOpen/><span>Resource</span><strong>Climate knowledge</strong></div>
+      <div className="weave-demo-item demo-place" ref={placeRef}><Globe2/><span>Place</span><strong>Madagascar</strong></div>
+      <div className="weave-demo-item demo-news" ref={newsRef}><span>Story</span><strong>Community knowledge</strong></div>
+      <div className="weave-demo-item demo-priority" ref={priorityRef}><Layers3/><span>Priority</span><strong>Risk & resilience</strong></div>
+    </div>
+  );
+}
+
 function WeaveSite({ onChoose }) {
   const [theme, setTheme] = useTheme();
   const [lang, setLang, language] = useLanguage();
@@ -1125,15 +1242,7 @@ function WeaveSite({ onChoose }) {
           <h2>One item can belong<br/>to many stories.</h2>
           <p>Instead of forcing content into a single tree, Weave exposes the relationships Directus can model underneath the site.</p>
         </div>
-        <div className="weave-principle-demo" data-reveal>
-          <div className="weave-demo-orbit" aria-hidden="true"/>
-          <div className="weave-demo-item demo-project"><span>Project</span><strong>ASILI</strong><small>4 active relationships</small></div>
-          <div className="weave-demo-line dl1"/><div className="weave-demo-line dl2"/><div className="weave-demo-line dl3"/><div className="weave-demo-line dl4"/>
-          <div className="weave-demo-item demo-publication"><BookOpen/><span>Resource</span><strong>Climate knowledge</strong></div>
-          <div className="weave-demo-item demo-place"><Globe2/><span>Place</span><strong>Madagascar</strong></div>
-          <div className="weave-demo-item demo-news"><span>Story</span><strong>Community knowledge</strong></div>
-          <div className="weave-demo-item demo-priority"><Layers3/><span>Priority</span><strong>Risk & resilience</strong></div>
-        </div>
+        <WeaveRelationshipDiagram/>
       </section>
 
       <section className="weave-streams">
