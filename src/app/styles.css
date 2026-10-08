@@ -1115,3 +1115,73 @@ img{max-width:100%;display:block}
   .weave-count-band > div > strong,
   .weave-count-band > div > strong > .number-value{font-size:76px}
 }
+
+
+/* Weave dynamic relationship geometry */
+.weave-dynamic-demo{
+  position:relative;
+}
+.weave-dynamic-lines{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  width:100%;
+  height:100%;
+  overflow:visible;
+  pointer-events:none;
+}
+.weave-dynamic-lines line{
+  stroke:rgba(255,255,255,.72);
+  stroke-width:2.25;
+  stroke-linecap:round;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 5px rgba(255,255,255,.08));
+}
+.weave-connection-dot{
+  fill:var(--yellow);
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 5px rgba(245,200,75,.32));
+}
+.weave-connection-dot-start{opacity:.8}
+.weave-connection-dot-end{
+  stroke:#25231f;
+  stroke-width:2;
+}
+.weave-dynamic-demo .weave-demo-item{
+  z-index:4;
+}
+.weave-dynamic-demo .demo-project{
+  z-index:5;
+}
+.weave-dynamic-demo .weave-demo-line{
+  display:none!important;
+}
+
+/* Weave closing metrics — preserve impact without colliding with the background wordmark */
+.weave-count-band:before{
+  top:.25vw;
+  font-size:6.7vw;
+  line-height:.82;
+  color:rgba(36,36,36,.032);
+}
+.weave-count-band > div > strong,
+.weave-count-band > div > strong > .number-value{
+  font-size:clamp(104px,8.6vw,162px);
+}
+.weave-count-band>div{
+  min-height:300px;
+  padding-top:42px;
+}
+
+@media(max-width:720px){
+  .weave-count-band:before{font-size:9.5vw;top:1vw}
+  .weave-count-band > div > strong,
+  .weave-count-band > div > strong > .number-value{font-size:82px}
+}
+@media(max-width:440px){
+  .weave-count-band:before{font-size:12vw}
+  .weave-count-band > div > strong,
+  .weave-count-band > div > strong > .number-value{font-size:72px}
+  .weave-dynamic-lines line{stroke-width:1.8}
+  .weave-connection-dot-end{r:4}
+}
