@@ -9,7 +9,15 @@ async function sha256(value) {
 }
 
 export default function PasswordGate({ children }) {
-  const expectedHash = useMemo(() => import.meta.env.VITE_UI_PASSWORD_HASH || LOCAL_DEMO_HASH, []);
+  const expectedHashes = useMemo(() => {
+    const configured = [
+      import.meta.env.VITE_UI_PASSWORD_HASH,
+      import.meta.env.VITE_UI_PASSWORD_HASH_2,
+    ].filter(Boolean);
+
+    return configured.length > 0 ? configured : [LOCAL_DEMO_HASH];
+  }, []);
+
   const [unlocked, setUnlocked] = useState(() => localStorage.getItem('iccrom-demo-unlocked') === '1');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,7 +29,7 @@ export default function PasswordGate({ children }) {
     setError('');
     try {
       const hash = await sha256(password);
-      if (hash === expectedHash) {
+      if (expectedHashes.includes(hash)) {
         localStorage.setItem('iccrom-demo-unlocked', '1');
         setUnlocked(true);
       } else {
