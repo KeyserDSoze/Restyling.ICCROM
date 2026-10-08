@@ -1149,15 +1149,21 @@ function useRadialConnections(containerRef, coreRef, targetRefs, deps = []) {
 
 function WeaveConnectionLayer({ connections, className = '' }) {
   return (
-    <svg className={'weave-connection-layer ' + className} width="100%" height="100%" aria-hidden="true">
-      {connections.map((line) => (
-        <g key={line.id}>
-          <line x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}/>
-          <circle className="weave-connection-dot weave-connection-dot-start" cx={line.x1} cy={line.y1} r="3.5"/>
-          <circle className="weave-connection-dot weave-connection-dot-end" cx={line.x2} cy={line.y2} r="5"/>
-        </g>
-      ))}
-    </svg>
+    <>
+      <svg className={'weave-connection-layer weave-connection-lines ' + className} width="100%" height="100%" aria-hidden="true">
+        {connections.map((line) => (
+          <line key={line.id} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}/>
+        ))}
+      </svg>
+      <svg className={'weave-connection-layer weave-connection-dots ' + className} width="100%" height="100%" aria-hidden="true">
+        {connections.map((line) => (
+          <g key={line.id}>
+            <circle className="weave-connection-dot weave-connection-dot-start" cx={line.x1} cy={line.y1} r="3.5"/>
+            <circle className="weave-connection-dot weave-connection-dot-end" cx={line.x2} cy={line.y2} r="5.5"/>
+          </g>
+        ))}
+      </svg>
+    </>
   );
 }
 
