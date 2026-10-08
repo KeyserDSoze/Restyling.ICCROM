@@ -1011,32 +1011,29 @@ function AtlasSite({ onChoose }) {
   );
 }
 
-function WeaveRelationshipDiagram() {
-  const containerRef = useRef(null);
-  const coreRef = useRef(null);
-  const publicationRef = useRef(null);
-  const placeRef = useRef(null);
-  const newsRef = useRef(null);
-  const priorityRef = useRef(null);
+function useRadialConnections(containerRef, coreRef, targetRefs, deps = []) {
   const [connections, setConnections] = useState([]);
 
   useEffect(() => {
     const container = containerRef.current;
     const core = coreRef.current;
-    const targets = [
-      { id: 'publication', ref: publicationRef },
-      { id: 'place', ref: placeRef },
-      { id: 'news', ref: newsRef },
-      { id: 'priority', ref: priorityRef },
-    ];
+    const targets = targetRefs
+      .map((ref, index) => ({ ref, index }))
+      .filter(({ ref }) => ref?.current);
 
-    if (!container || !core || targets.some(({ ref }) => !ref.current)) return;
+    if (!container || !core || targets.length === 0) {
+      setConnections([]);
+      return undefined;
+    }
 
     let frame = 0;
+    let disposed = false;
 
     const recalculate = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
+        if (disposed) return;
+
         const containerRect = container.getBoundingClientRect();
         const coreRectRaw = core.getBoundingClientRect();
 
@@ -1045,41 +1042,40 @@ function WeaveRelationshipDiagram() {
           top: rect.top - containerRect.top,
           width: rect.width,
           height: rect.height,
-          right: rect.right - containerRect.left,
-          bottom: rect.bottom - containerRect.top,
         });
 
         const coreRect = rectInContainer(coreRectRaw);
-        const center = {
+        const coreCenter = {
           x: coreRect.left + coreRect.width / 2,
           y: coreRect.top + coreRect.height / 2,
         };
-        const radius = Math.min(coreRect.width, coreRect.height) / 2;
+        const coreRadius = Math.min(coreRect.width, coreRect.height) / 2;
 
-        const next = targets.map(({ id, ref }) => {
-          const targetRect = rectInContainer(ref.current.getBoundingClientRect());
+        const next = targets.map(({ ref, index }) => {
+          const targetNode = ref.current;
+          const targetRect = rectInContainer(targetNode.getBoundingClientRect());
           const targetCenter = {
             x: targetRect.left + targetRect.width / 2,
             y: targetRect.top + targetRect.height / 2,
           };
 
-          const dx = targetCenter.x - center.x;
-          const dy = targetCenter.y - center.y;
+          const dx = targetCenter.x - coreCenter.x;
+          const dy = targetCenter.y - coreCenter.y;
           const distance = Math.hypot(dx, dy) || 1;
           const ux = dx / distance;
           const uy = dy / distance;
 
           const start = {
-            x: center.x + ux * radius,
-            y: center.y + uy * radius,
+            x: coreCenter.x + ux * coreRadius,
+            y: coreCenter.y + uy * coreRadius,
           };
 
-          const vx = center.x - targetCenter.x;
-          const vy = center.y - targetCenter.y;
+          const vx = coreCenter.x - targetCenter.x;
+          const vy = coreCenter.y - targetCenter.y;
           const halfW = targetRect.width / 2;
           const halfH = targetRect.height / 2;
-          const style = window.getComputedStyle(ref.current);
-          const radius = Math.min(
+          const style = window.getComputedStyle(targetNode);
+          const cornerRadius = Math.min(
             parseFloat(style.borderTopLeftRadius) || 0,
             parseFloat(style.borderTopRightRadius) || 0,
             parseFloat(style.borderBottomRightRadius) || 0,
@@ -1093,39 +1089,33 @@ function WeaveRelationshipDiagram() {
             const ay = Math.abs(y);
             if (ax > halfW || ay > halfH) return false;
 
-            const innerW = Math.max(0, halfW - radius);
-            const innerH = Math.max(0, halfH - radius);
-
+            const innerW = Math.max(0, halfW - cornerRadius);
+            const innerH = Math.max(0, halfH - cornerRadius);
             if (ax <= innerW || ay <= innerH) return true;
 
             const cx = ax - innerW;
             const cy = ay - innerH;
-            return (cx * cx) + (cy * cy) <= radius * radius;
+            return (cx * cx) + (cy * cy) <= cornerRadius * cornerRadius;
           };
 
           const sx = Math.abs(vx) > 0.001 ? halfW / Math.abs(vx) : Number.POSITIVE_INFINITY;
           const sy = Math.abs(vy) > 0.001 ? halfH / Math.abs(vy) : Number.POSITIVE_INFINITY;
-          const rectScale = Math.min(sx, sy);
+          const outerScale = Math.min(sx, sy) * 1.2;
 
-          // Search the real visible perimeter, including rounded corners.
           let low = 0;
-          let high = rectScale * 1.15;
-          for (let i = 0; i < 28; i += 1) {
+          let high = outerScale;
+          for (let i = 0; i < 30; i += 1) {
             const mid = (low + high) / 2;
-            const px = vx * mid;
-            const py = vy * mid;
-            if (insideRoundedRect(px, py)) low = mid;
+            if (insideRoundedRect(vx * mid, vy * mid)) low = mid;
             else high = mid;
           }
 
-          // A tiny inward nudge keeps the dot visually seated on the card border.
-          const borderScale = Math.max(0, low - (1.25 / Math.max(Math.hypot(vx, vy), 1)));
           const end = {
-            x: targetCenter.x + vx * borderScale,
-            y: targetCenter.y + vy * borderScale,
+            x: targetCenter.x + vx * low,
+            y: targetCenter.y + vy * low,
           };
 
-          return { id, x1: start.x, y1: start.y, x2: end.x, y2: end.y };
+          return { id: index, x1: start.x, y1: start.y, x2: end.x, y2: end.y };
         });
 
         setConnections(next);
@@ -1133,35 +1123,101 @@ function WeaveRelationshipDiagram() {
     };
 
     const observer = new ResizeObserver(recalculate);
-    [container, core, ...targets.map(({ ref }) => ref.current)].forEach((node) => observer.observe(node));
+    observer.observe(container);
+    observer.observe(core);
+    targets.forEach(({ ref }) => observer.observe(ref.current));
+
+    const settleTimers = [0, 80, 220, 500].map((delay) => window.setTimeout(recalculate, delay));
     window.addEventListener('resize', recalculate);
-    document.fonts?.ready?.then(recalculate);
+    document.fonts?.ready?.then(() => {
+      if (!disposed) recalculate();
+    });
     recalculate();
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(frame);
+      settleTimers.forEach(clearTimeout);
       observer.disconnect();
       window.removeEventListener('resize', recalculate);
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+
+  return connections;
+}
+
+function WeaveConnectionLayer({ connections, className = '' }) {
+  return (
+    <svg className={'weave-connection-layer ' + className} width="100%" height="100%" aria-hidden="true">
+      {connections.map((line) => (
+        <g key={line.id}>
+          <line x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}/>
+          <circle className="weave-connection-dot weave-connection-dot-start" cx={line.x1} cy={line.y1} r="3.5"/>
+          <circle className="weave-connection-dot weave-connection-dot-end" cx={line.x2} cy={line.y2} r="5"/>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function WeaveRelationshipDiagram() {
+  const containerRef = useRef(null);
+  const coreRef = useRef(null);
+  const publicationRef = useRef(null);
+  const placeRef = useRef(null);
+  const newsRef = useRef(null);
+  const priorityRef = useRef(null);
+  const targetRefs = [publicationRef, placeRef, newsRef, priorityRef];
+  const connections = useRadialConnections(containerRef, coreRef, targetRefs, []);
 
   return (
     <div className="weave-principle-demo weave-dynamic-demo" ref={containerRef} data-reveal>
       <div className="weave-demo-orbit" aria-hidden="true"/>
-      <svg className="weave-dynamic-lines" aria-hidden="true">
-        {connections.map((line) => (
-          <g key={line.id}>
-            <line x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}/>
-            <circle className="weave-connection-dot weave-connection-dot-start" cx={line.x1} cy={line.y1} r="3.5"/>
-            <circle className="weave-connection-dot weave-connection-dot-end" cx={line.x2} cy={line.y2} r="5"/>
-          </g>
-        ))}
-      </svg>
+      <WeaveConnectionLayer connections={connections} className="weave-principle-lines"/>
       <div className="weave-demo-item demo-project" ref={coreRef}><span>Project</span><strong>ASILI</strong><small>4 active relationships</small></div>
       <div className="weave-demo-item demo-publication" ref={publicationRef}><BookOpen/><span>Resource</span><strong>Climate knowledge</strong></div>
       <div className="weave-demo-item demo-place" ref={placeRef}><Globe2/><span>Place</span><strong>Madagascar</strong></div>
       <div className="weave-demo-item demo-news" ref={newsRef}><span>Story</span><strong>Community knowledge</strong></div>
       <div className="weave-demo-item demo-priority" ref={priorityRef}><Layers3/><span>Priority</span><strong>Risk & resilience</strong></div>
+    </div>
+  );
+}
+
+function WeaveLiveKnowledgeGraph({ active }) {
+  const containerRef = useRef(null);
+  const coreRef = useRef(null);
+  const nodeRefs = useRef([]);
+
+  if (nodeRefs.current.length !== active.nodes.length) {
+    nodeRefs.current = active.nodes.map((_, index) => nodeRefs.current[index] || { current: null });
+  }
+
+  const connections = useRadialConnections(containerRef, coreRef, nodeRefs.current, [active.id]);
+
+  return (
+    <div ref={containerRef} className="weave-live-graph weave-live-graph-dynamic" style={{ '--lens-colour': active.colour }} aria-label={'Connected content for ' + active.label}>
+      <div className="weave-grid-bg"/>
+      <div className="weave-graph-meta">
+        <span><i/>Live knowledge graph</span>
+        <span>{active.nodes.length} connected nodes</span>
+      </div>
+      <div className="weave-core-orbit" aria-hidden="true"><i/><i/><i/></div>
+      <WeaveConnectionLayer connections={connections} className="weave-live-lines"/>
+      <div ref={coreRef} className="weave-core-node"><small>Current lens</small><strong>{active.core}</strong><span>{active.label}</span></div>
+      {active.nodes.map((node,index) => (
+        <a
+          ref={(element) => { nodeRefs.current[index].current = element; }}
+          href={node.link}
+          target="_blank"
+          rel="noreferrer"
+          className={'weave-live-node node-pos-' + (index+1)}
+          key={node.title}
+        >
+          <b className="weave-node-index">0{index+1}</b>
+          <span>{node.type}</span><strong>{node.title}</strong><small>{node.meta}</small><ArrowRight size={14}/>
+        </a>
+      ))}
     </div>
   );
 }
@@ -1275,22 +1331,7 @@ function WeaveSite({ onChoose }) {
             <p>{active.text}</p>
           </div>
 
-          <div className="weave-live-graph" style={{ '--lens-colour': active.colour }} aria-label={'Connected content for ' + active.label}>
-            <div className="weave-grid-bg"/>
-            <div className="weave-graph-meta">
-              <span><i/>Live knowledge graph</span>
-              <span>{active.nodes.length} connected nodes</span>
-            </div>
-            <div className="weave-core-orbit" aria-hidden="true"><i/><i/><i/></div>
-            <span className="weave-edge we1"/><span className="weave-edge we2"/><span className="weave-edge we3"/><span className="weave-edge we4"/><span className="weave-edge we5"/>
-            <div className="weave-core-node"><small>Current lens</small><strong>{active.core}</strong><span>{active.label}</span></div>
-            {active.nodes.map((node,index) => (
-              <a href={node.link} target="_blank" rel="noreferrer" className={'weave-live-node node-pos-' + (index+1)} key={node.title}>
-                <b className="weave-node-index">0{index+1}</b>
-                <span>{node.type}</span><strong>{node.title}</strong><small>{node.meta}</small><ArrowRight size={14}/>
-              </a>
-            ))}
-          </div>
+          <WeaveLiveKnowledgeGraph active={active}/>
         </div>
 
         <aside className="weave-inspector">
