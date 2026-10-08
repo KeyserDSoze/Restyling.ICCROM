@@ -941,19 +941,14 @@ img{max-width:100%;display:block}
   background:linear-gradient(90deg,rgba(255,255,255,.88),rgba(255,255,255,.36));
   box-shadow:0 0 8px rgba(255,255,255,.08);
 }
+.weave-demo-line{
+  border-radius:999px;
+}
 .weave-demo-line:before,
 .weave-demo-line:after{
-  content:'';
-  position:absolute;
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  top:-3px;
-  background:var(--yellow);
-  box-shadow:0 0 0 4px rgba(245,200,75,.10);
+  content:none;
+  display:none;
 }
-.weave-demo-line:before{left:0}
-.weave-demo-line:after{right:0}
 .weave-demo-item{
   z-index:4;
   border-color:rgba(255,255,255,.28);
@@ -1031,16 +1026,30 @@ img{max-width:100%;display:block}
 }
 .weave-count-band>div:hover:after{width:110px}
 .weave-count-band strong{
-  font-size:clamp(96px,8vw,148px);
-  line-height:.72;
-  letter-spacing:-.055em;
-  font-weight:650;
+  display:block;
+  font-family:var(--display);
+  font-size:clamp(118px,10vw,182px);
+  line-height:.7;
+  letter-spacing:-.065em;
+  font-weight:700;
 }
-.weave-count-band span{
-  font-size:10px;
+.weave-count-band strong .number-value{
+  display:block;
+  font:inherit;
+  font-size:1em;
+  line-height:inherit;
+  letter-spacing:inherit;
+  font-weight:inherit;
+}
+.weave-count-band>div>span{
+  display:block;
+  font-family:var(--ui);
+  font-size:11px;
   line-height:1.25;
-  margin-top:24px;
+  margin-top:28px;
   padding-bottom:34px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
 }
 
 @media(max-width:980px){
@@ -1055,13 +1064,54 @@ img{max-width:100%;display:block}
   .weave-demo-orbit{width:245px;height:245px}
   .weave-demo-line{height:2px}
   .weave-count-band>div{min-height:205px;padding:22px}
-  .weave-count-band strong{font-size:72px}
-  .weave-count-band span{font-size:9px;margin-top:15px;padding-bottom:24px}
+  .weave-count-band strong{font-size:86px}
+  .weave-count-band strong .number-value{font-size:1em}
+  .weave-count-band>div>span{font-size:10px;margin-top:17px;padding-bottom:24px}
   .weave-count-band>div:after{left:22px;bottom:20px}
 }
 @media(max-width:440px){
   .weave-graph-meta{display:none}
   .weave-demo-orbit{display:none}
   .weave-count-band>div{min-height:180px}
-  .weave-count-band strong{font-size:62px}
+  .weave-count-band strong{font-size:76px}
+  .weave-count-band strong .number-value{font-size:1em}
+}
+
+
+/* Weave metric + relationship hotfix */
+.weave-count-band > div > strong,
+.weave-count-band > div > strong > .number-value{
+  font-family:var(--display);
+  font-size:clamp(118px,10vw,182px);
+  line-height:.7;
+  letter-spacing:-.065em;
+  font-weight:700;
+}
+.weave-count-band > div > span{
+  font-family:var(--ui);
+  font-size:11px;
+  line-height:1.25;
+}
+.weave-principle-demo .weave-demo-line{
+  z-index:1;
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg,rgba(255,255,255,.82),rgba(255,255,255,.46));
+}
+.weave-principle-demo .weave-demo-line::before,
+.weave-principle-demo .weave-demo-line::after{
+  content:none!important;
+  display:none!important;
+}
+.weave-principle-demo .weave-demo-item{z-index:4}
+.weave-principle-demo .demo-project{z-index:5}
+
+@media(max-width:720px){
+  .weave-count-band > div > strong,
+  .weave-count-band > div > strong > .number-value{font-size:86px}
+  .weave-count-band > div > span{font-size:10px}
+}
+@media(max-width:440px){
+  .weave-count-band > div > strong,
+  .weave-count-band > div > strong > .number-value{font-size:76px}
 }
