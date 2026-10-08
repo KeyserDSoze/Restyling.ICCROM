@@ -660,7 +660,292 @@ function Footer({ t }) {
   );
 }
 
-function Site() {
+
+function ExperienceTools({ theme, setTheme, lang, setLang, language, onChoose, label }) {
+  const [langOpen, setLangOpen] = useState(false);
+  return (
+    <div className="experience-tools">
+      {onChoose && <button className="experience-pill" onClick={onChoose}><Layers3 size={16}/><span>{label}</span></button>}
+      <button className="round-action" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
+        {theme === 'dark' ? <Sun size={18}/> : <Moon size={18}/>}
+      </button>
+      <div className="language">
+        <button className="language-trigger" onClick={() => setLangOpen(!langOpen)} aria-expanded={langOpen}>
+          <Languages size={17}/><span>{language.short}</span><ChevronDown size={14}/>
+        </button>
+        {langOpen && (
+          <div className="language-menu">
+            {languages.map((item) => (
+              <button key={item.code} className={item.code === lang ? 'active' : ''} onClick={() => { setLang(item.code); setLangOpen(false); }}>
+                {item.label}<span>{item.short}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ExperienceChooser({ onSelect }) {
+  const [theme, setTheme] = useTheme();
+  const [lang, setLang, language] = useLanguage();
+  const e = getExperienceCopy(lang);
+
+  const choices = [
+    { id: 'pulse', number: '01', title: 'Pulse', text: e.pulse, accent: 'red' },
+    { id: 'atlas', number: '02', title: 'Atlas', text: e.atlas, accent: 'blue' },
+    { id: 'weave', number: '03', title: 'Weave', text: e.weave, accent: 'yellow' },
+  ];
+
+  return (
+    <main className="experience-chooser">
+      <div className="chooser-noise" aria-hidden="true"/>
+      <header className="chooser-header">
+        <div className="chooser-brand">
+          <img src={BRAND_LOGO} alt="ICCROM"/>
+          <span>Digital restyling concepts</span>
+        </div>
+        <ExperienceTools {...{ theme, setTheme, lang, setLang, language }}/>
+      </header>
+
+      <section className="chooser-intro">
+        <p className="eyebrow">{e.chooserEyebrow}</p>
+        <h1>{e.chooserTitle}</h1>
+        <p>{e.chooserLead}</p>
+      </section>
+
+      <section className="chooser-grid">
+        {choices.map((choice) => (
+          <button className={'experience-card experience-' + choice.accent} key={choice.id} onClick={() => onSelect(choice.id)}>
+            <div className="experience-card-top"><span>{choice.number}</span><ArrowDownRight/></div>
+            <div className={'experience-preview preview-' + choice.id} aria-hidden="true">
+              {choice.id === 'pulse' && <><i className="pulse-photo"/><i className="pulse-bar"/><i className="pulse-dot"/></>}
+              {choice.id === 'atlas' && <><i className="atlas-sphere"/><i className="atlas-ring ring-a"/><i className="atlas-ring ring-b"/><i className="atlas-pin pin-a"/><i className="atlas-pin pin-b"/></>}
+              {choice.id === 'weave' && <><i className="weave-node node-a"/><i className="weave-node node-b"/><i className="weave-node node-c"/><i className="weave-line line-a"/><i className="weave-line line-b"/></>}
+            </div>
+            <div className="experience-card-copy">
+              <h2>{choice.title}</h2>
+              <p>{choice.text}</p>
+              <strong>{e.enter}<ArrowRight size={17}/></strong>
+            </div>
+          </button>
+        ))}
+      </section>
+
+      <footer className="chooser-footer">
+        <span>ICCROM · Concept study · 2026</span>
+        <span>Three narratives, one content model</span>
+      </footer>
+    </main>
+  );
+}
+
+function AtlasSite({ onChoose }) {
+  const [theme, setTheme] = useTheme();
+  const [lang, setLang, language] = useLanguage();
+  const t = getCopy(lang);
+  const e = getExperienceCopy(lang);
+  const regions = [
+    { name: 'Africa', count: 4, x: '47%', y: '62%' },
+    { name: 'Europe', count: 3, x: '50%', y: '32%' },
+    { name: 'Asia-Pacific', count: 5, x: '71%', y: '46%' },
+    { name: 'Arab States', count: 3, x: '57%', y: '48%' },
+    { name: 'Americas', count: 2, x: '23%', y: '44%' },
+  ];
+
+  return (
+    <div className="atlas-site">
+      <ReplayReveal/>
+      <ScrollProgress/>
+      <header className="alt-header atlas-header">
+        <a className="alt-brand" href="#atlas-top"><img src={BRAND_LOGO} alt="ICCROM"/><span>Atlas</span></a>
+        <ExperienceTools {...{ theme, setTheme, lang, setLang, language, onChoose, label: e.chooseAnother }}/>
+      </header>
+
+      <section className="atlas-hero" id="atlas-top">
+        <div className="atlas-hero-copy" data-reveal>
+          <p className="eyebrow">ICCROM / Global network / 139 Member States</p>
+          <h1>{e.atlasTitle}</h1>
+          <p>{e.atlasLead}</p>
+          <div className="atlas-hero-stats">
+            <div><strong><AnimatedNumber value={139}/></strong><span>Member States</span></div>
+            <div><strong><AnimatedNumber value={6}/></strong><span>World regions</span></div>
+            <div><strong><AnimatedNumber value={70} prefix="~"/></strong><span>Years of action</span></div>
+          </div>
+        </div>
+
+        <div className="atlas-globe" data-reveal aria-label="Conceptual global ICCROM map">
+          <div className="atlas-grid-lines"/>
+          <div className="globe-ring g1"/><div className="globe-ring g2"/><div className="globe-ring g3"/>
+          <div className="globe-land land-a"/><div className="globe-land land-b"/><div className="globe-land land-c"/>
+          {regions.map((region) => (
+            <div className="region-pin" key={region.name} style={{ left: region.x, top: region.y }}>
+              <i/><span>{region.name}</span><b>{region.count}</b>
+            </div>
+          ))}
+          <div className="globe-center-label"><Globe2/><strong>ICCROM</strong><span>Rome · Italy</span></div>
+        </div>
+      </section>
+
+      <section className="atlas-region-band">
+        {regions.map((region, index) => <div key={region.name}><span>0{index + 1}</span><strong>{region.name}</strong><small>{region.count} featured initiatives</small></div>)}
+      </section>
+
+      <section className="atlas-projects">
+        <div className="atlas-section-title" data-reveal>
+          <p className="eyebrow">Projects by place</p>
+          <h2>From a global network<br/>to local action.</h2>
+          <p>{t.projectsLead}</p>
+        </div>
+        <div className="atlas-project-list">
+          {projects.map((project, index) => (
+            <a href={project.link} target="_blank" rel="noreferrer" className="atlas-project-row" key={project.id} data-reveal>
+              <span className="atlas-row-no">0{index + 1}</span>
+              <div className="atlas-row-image"><img src={projectVisuals[index % projectVisuals.length]} alt="" loading="lazy"/></div>
+              <div><small>{project.region} · {project.direction}</small><h3>{project.title}</h3><p>{project.short}</p></div>
+              <div className="atlas-row-metric"><strong>{project.metric}</strong><ArrowRight/></div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="atlas-field-notes">
+        <div className="atlas-section-title light" data-reveal>
+          <p className="eyebrow">Field notes / current work</p>
+          <h2>What is moving<br/>around the world.</h2>
+        </div>
+        <div className="atlas-note-grid">
+          {news.slice(0,4).map((item,index) => (
+            <a href={item.link} target="_blank" rel="noreferrer" key={item.id} className="atlas-note" data-reveal>
+              <span>0{index+1} · {item.date}</span><h3>{item.title}</h3><p>{item.summary}</p><strong>{item.region}<ArrowRight size={15}/></strong>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="atlas-knowledge">
+        <div data-reveal><p className="eyebrow">Knowledge across borders</p><h2>{t.publications}</h2></div>
+        <div className="atlas-knowledge-columns">
+          <div>
+            <span>Publications</span>
+            {publications.slice(0,3).map(item => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"><strong>{item.title}</strong><small>{item.year} · {item.type}</small></a>)}
+          </div>
+          <div>
+            <span>Learning</span>
+            {courses.map(item => <article key={item.id}><strong>{item.title}</strong><small>{item.date} · {item.place}</small></article>)}
+          </div>
+        </div>
+      </section>
+
+      <Footer t={t}/>
+    </div>
+  );
+}
+
+function WeaveSite({ onChoose }) {
+  const [theme, setTheme] = useTheme();
+  const [lang, setLang, language] = useLanguage();
+  const [selectedId, setSelectedId] = useState(projects[0].id);
+  const t = getCopy(lang);
+  const e = getExperienceCopy(lang);
+  const selected = projects.find((item) => item.id === selectedId) || projects[0];
+  const relatedNews = news.filter(item => selected.related?.includes(item.id));
+  const relatedPublications = publications.filter(item => selected.related?.includes(item.id));
+  const relatedCourses = courses.filter(item => selected.related?.includes(item.id));
+
+  return (
+    <div className="weave-site">
+      <ReplayReveal/>
+      <ScrollProgress/>
+      <header className="alt-header weave-header">
+        <a className="alt-brand" href="#weave-top"><img src={BRAND_LOGO} alt="ICCROM"/><span>Weave</span></a>
+        <ExperienceTools {...{ theme, setTheme, lang, setLang, language, onChoose, label: e.chooseAnother }}/>
+      </header>
+
+      <section className="weave-hero" id="weave-top">
+        <div className="weave-hero-copy" data-reveal>
+          <p className="eyebrow">Projects / knowledge / learning / places</p>
+          <h1>{e.weaveTitle}</h1>
+          <p>{e.weaveLead}</p>
+          <a className="cta dark" href="#weave-network">{t.explore}<ArrowDownRight/></a>
+        </div>
+
+        <div className="weave-hero-graph" data-reveal aria-hidden="true">
+          <span className="hero-thread ht1"/><span className="hero-thread ht2"/><span className="hero-thread ht3"/><span className="hero-thread ht4"/><span className="hero-thread ht5"/>
+          <div className="hero-node hn-core"><Layers3/><strong>Project</strong></div>
+          <div className="hero-node hn-1"><BookOpen/><span>Publication</span></div>
+          <div className="hero-node hn-2"><GraduationCap/><span>Learning</span></div>
+          <div className="hero-node hn-3"><Globe2/><span>Place</span></div>
+          <div className="hero-node hn-4"><span>News</span></div>
+          <div className="hero-node hn-5"><span>Priority</span></div>
+        </div>
+      </section>
+
+      <section className="weave-network" id="weave-network">
+        <div className="weave-selector" data-reveal>
+          <p className="eyebrow">Choose a project node</p>
+          <h2>Follow the thread.</h2>
+          <div className="weave-project-tabs">
+            {projects.map((project,index) => (
+              <button key={project.id} className={selected.id === project.id ? 'active' : ''} onClick={() => setSelectedId(project.id)}>
+                <span>0{index+1}</span><strong>{project.title}</strong><small>{project.region} · {project.theme}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="weave-detail" data-reveal>
+          <div className="weave-detail-main">
+            <span>{selected.direction} · {selected.region}</span>
+            <h3>{selected.title}</h3>
+            <p>{selected.short}</p>
+            <strong>{selected.metric}</strong>
+          </div>
+          <div className="weave-relations">
+            <article className="relation-card rc-publication"><BookOpen/><span>Publications</span>{relatedPublications.length ? relatedPublications.map(item => <strong key={item.id}>{item.title}</strong>) : <strong>Connected guidance & resources</strong>}</article>
+            <article className="relation-card rc-news"><span>News</span>{relatedNews.length ? relatedNews.map(item => <strong key={item.id}>{item.title}</strong>) : <strong>Latest programme stories</strong>}</article>
+            <article className="relation-card rc-course"><GraduationCap/><span>Learning</span>{relatedCourses.length ? relatedCourses.map(item => <strong key={item.id}>{item.title}</strong>) : <strong>Related capacity building</strong>}</article>
+            <article className="relation-card rc-place"><Globe2/><span>Places</span><strong>{selected.countries.join(' · ')}</strong></article>
+            <article className="relation-card rc-priority"><Layers3/><span>Strategic context</span><strong>{selected.direction} · {selected.theme}</strong></article>
+          </div>
+        </div>
+      </section>
+
+      <section className="weave-threads">
+        <div className="weave-thread-heading" data-reveal>
+          <p className="eyebrow">Knowledge threads</p>
+          <h2>One content layer.<br/>Many ways in.</h2>
+        </div>
+        <div className="thread-columns">
+          <div className="thread-column">
+            <span>01 / Publications</span>
+            {publications.map(item => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"><small>{item.year}</small><strong>{item.title}</strong></a>)}
+          </div>
+          <div className="thread-column">
+            <span>02 / Learning</span>
+            {courses.map(item => <article key={item.id}><small>{item.date}</small><strong>{item.title}</strong></article>)}
+          </div>
+          <div className="thread-column">
+            <span>03 / Stories</span>
+            {news.slice(0,4).map(item => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"><small>{item.date}</small><strong>{item.title}</strong></a>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="weave-impact">
+        <div><strong><AnimatedNumber value={139}/></strong><span>Member States connected</span></div>
+        <div><strong><AnimatedNumber value={9}/></strong><span>Priority Areas connected</span></div>
+        <div><strong><AnimatedNumber value={6}/></strong><span>Featured project nodes</span></div>
+        <div><strong><AnimatedNumber value={4}/></strong><span>Knowledge types connected</span></div>
+      </section>
+
+      <Footer t={t}/>
+    </div>
+  );
+}
+
+function Site({ onChoose }) {
   const [theme, setTheme] = useTheme();
   const [lang, setLang, language] = useLanguage();
   const [selected, setSelected] = useState(null);
@@ -670,7 +955,7 @@ function Site() {
     <div className="site-shell">
       <ReplayReveal/>
       <ScrollProgress/>
-      <Header {...{ t, theme, setTheme, lang, setLang, language }}/>
+      <Header {...{ t, theme, setTheme, lang, setLang, language, onChoose }}/>
       <Hero t={t}/>
       <BrandTicker/>
       <CareSection t={t}/>
@@ -687,5 +972,14 @@ function Site() {
 }
 
 export default function App() {
-  return <PasswordGate><Site/></PasswordGate>;
+  const [view, navigate] = useExperienceRoute();
+
+  return (
+    <PasswordGate>
+      {!view && <ExperienceChooser onSelect={navigate}/>}
+      {view === 'pulse' && <Site onChoose={() => navigate(null)}/>}
+      {view === 'atlas' && <AtlasSite onChoose={() => navigate(null)}/>}
+      {view === 'weave' && <WeaveSite onChoose={() => navigate(null)}/>}
+    </PasswordGate>
+  );
 }
