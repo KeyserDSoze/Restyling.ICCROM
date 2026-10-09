@@ -1512,3 +1512,63 @@ img{max-width:100%;display:block}
 .weave-connection-dots .weave-connection-dot-end{
   paint-order:stroke fill;
 }
+
+
+/* Seven-experience chooser */
+.chooser-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+.experience-card{
+  display:block;
+  width:100%;
+  color:inherit;
+  text-decoration:none;
+}
+.experience-horizon:hover{border-color:#6dcab8}
+.experience-chapters:hover{border-color:#8a6edb}
+.experience-mosaic:hover{border-color:#ef7d5d}
+.experience-patina:hover{border-color:#b38639}
+
+/* Horizon — institutional / immersive */
+.preview-horizon{background:#15294b}
+.concept-horizon-photo{position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(8,19,39,.06),rgba(8,19,39,.72)),
+  url('https://www.iccrom.org/sites/default/files/2026-03/pnc-ituc_iccrom_2026_3.jpg') center/cover}
+.concept-horizon-copy{position:absolute;left:18px;bottom:28px;width:52%;height:42px;border-top:4px solid #fff;border-bottom:10px solid rgba(255,255,255,.84)}
+.concept-horizon-stat{position:absolute;right:17px;bottom:18px;width:60px;height:60px;border-radius:50%;background:#6dcab8;box-shadow:0 0 0 8px rgba(109,202,184,.15)}
+
+/* Chapters — five-part accessible book */
+.preview-chapters{background:#f3efe6}
+.concept-chapter{position:absolute;left:18px;right:18px;height:43px;border-radius:8px;box-shadow:0 7px 14px rgba(34,34,34,.08)}
+.concept-chapter.c1{top:27px;background:#7559c7}
+.concept-chapter.c2{top:81px;background:#ef8c50}
+.concept-chapter.c3{top:135px;background:#58a785}
+.concept-chapter-index{position:absolute;right:26px;top:18px;width:4px;height:182px;background:repeating-linear-gradient(to bottom,#242424 0 10px,transparent 10px 26px);opacity:.35}
+
+/* Mosaic — editorial / playful */
+.preview-mosaic{background:#f0dfc8}
+.concept-polaroid{position:absolute;width:118px;height:145px;background:#fff;padding:8px;box-shadow:0 13px 23px rgba(38,31,25,.17)}
+.concept-polaroid:before{content:'';display:block;width:100%;height:100px;background:url('https://www.iccrom.org/sites/default/files/2026-06/iccrom_ready_laquila_min260526-250.jpg') center/cover}
+.concept-polaroid.p1{left:34px;top:29px;transform:rotate(-7deg)}
+.concept-polaroid.p2{right:36px;top:41px;transform:rotate(8deg)}
+.concept-polaroid.p2:before{background-image:url('https://www.iccrom.org/sites/default/files/2025-12/iccrom_34th_session_of_the_general_assembly-3176.jpg')}
+.concept-mosaic-mark{position:absolute;left:50%;top:50%;width:80px;height:80px;transform:translate(-50%,-50%);border-radius:42% 58% 55% 45%;background:#ef7d5d;mix-blend-mode:multiply;opacity:.86}
+
+/* Patina — matter / pigments */
+.preview-patina{background:#5b3826}
+.concept-patina-surface{position:absolute;inset:0;background:
+  radial-gradient(circle at 18% 22%,rgba(208,163,62,.8) 0 7%,transparent 8%),
+  radial-gradient(circle at 72% 30%,rgba(42,104,132,.85) 0 9%,transparent 10%),
+  radial-gradient(circle at 48% 72%,rgba(63,119,88,.8) 0 10%,transparent 11%),
+  linear-gradient(125deg,#906443,#4f3024)}
+.concept-patina-clean{position:absolute;width:135px;height:135px;border-radius:50%;left:48%;top:48%;transform:translate(-50%,-50%);background:
+  radial-gradient(circle at 36% 35%,#d4b75f,#b85d3d 34%,#315d75 68%,#d5b06c);box-shadow:0 0 0 8px rgba(255,255,255,.15)}
+.concept-patina-brush{position:absolute;width:108px;height:13px;border-radius:999px;right:18px;bottom:25px;background:#e5d2aa;transform:rotate(-28deg);box-shadow:54px 0 0 -3px #29231e}
+
+@media(max-width:1180px){
+  .chooser-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+  .chooser-grid{grid-template-columns:1fr}
+  .experience-card{min-height:450px}
+}
