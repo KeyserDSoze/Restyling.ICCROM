@@ -744,15 +744,18 @@ function ExperienceChooser({ onSelect }) {
   const e = getExperienceCopy(lang);
 
   const staticBase = `${import.meta.env.BASE_URL}mockups/`;
+  const staticReady = import.meta.env.VITE_STATIC_MOCKUPS === '1';
   const sc = staticConceptCopy[lang] || staticConceptCopy.en;
   const choices = [
     { id: 'pulse', number: '01', title: 'Pulse', text: e.pulse, accent: 'red' },
     { id: 'atlas', number: '02', title: 'Atlas', text: e.atlas, accent: 'blue' },
     { id: 'weave', number: '03', title: 'Weave', text: e.weave, accent: 'yellow' },
-    { id: 'horizon', number: '04', title: 'Horizon', text: sc.horizon, accent: 'horizon', href: staticBase + 'horizon/' },
-    { id: 'chapters', number: '05', title: 'Chapters', text: sc.chapters, accent: 'chapters', href: staticBase + 'chapters/' },
-    { id: 'mosaic', number: '06', title: 'Mosaic', text: sc.mosaic, accent: 'mosaic', href: staticBase + 'mosaic/' },
-    { id: 'patina', number: '07', title: 'Patina', text: sc.patina, accent: 'patina', href: staticBase + 'patina/' },
+    ...(staticReady ? [
+      { id: 'horizon', number: '04', title: 'Horizon', text: sc.horizon, accent: 'horizon', href: staticBase + 'horizon/' },
+      { id: 'chapters', number: '05', title: 'Chapters', text: sc.chapters, accent: 'chapters', href: staticBase + 'chapters/' },
+      { id: 'mosaic', number: '06', title: 'Mosaic', text: sc.mosaic, accent: 'mosaic', href: staticBase + 'mosaic/' },
+      { id: 'patina', number: '07', title: 'Patina', text: sc.patina, accent: 'patina', href: staticBase + 'patina/' },
+    ] : []),
   ];
 
   return (
@@ -803,7 +806,7 @@ function ExperienceChooser({ onSelect }) {
 
       <footer className="chooser-footer">
         <span>ICCROM · Concept study · 2026</span>
-        <span>Seven narratives, one content ecosystem</span>
+        <span>{staticReady ? 'Seven narratives, one content ecosystem' : 'Three narratives, one content model'}</span>
       </footer>
     </main>
   );
