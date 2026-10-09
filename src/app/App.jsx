@@ -41,9 +41,9 @@ const projectVisuals = [visuals.africa, visuals.ready, visuals.cinqueTerre, visu
 
 const experienceCopy = {
   en: {
-    chooserEyebrow: 'Seven perspectives · one ICCROM',
+    chooserEyebrow: 'Three perspectives · one ICCROM',
     chooserTitle: 'Choose how you want to experience heritage.',
-    chooserLead: 'Seven credible directions for the same institution, content ecosystem and 2024 brand identity.',
+    chooserLead: 'Three credible directions for the same institution, content ecosystem and 2024 brand identity.',
     enter: 'Enter experience',
     pulse: 'Editorial, human and alive. Stories, imagery and impact numbers move with the visitor.',
     atlas: 'Global by design. Member States, programmes and places become the navigation system.',
@@ -55,51 +55,51 @@ const experienceCopy = {
     chooseAnother: 'Experiences'
   },
   fr: {
-    chooserEyebrow: 'Sept perspectives · un seul ICCROM',
+    chooserEyebrow: 'Trois perspectives · un seul ICCROM',
     chooserTitle: 'Choisissez votre manière de découvrir le patrimoine.',
-    chooserLead: 'Sept directions crédibles pour la même institution, le même écosystème de contenus et la même identité.',
+    chooserLead: 'Trois directions crédibles pour la même institution, le même écosystème de contenus et la même identité.',
     enter: 'Entrer', pulse: 'Éditorial, humain et vivant. Histoires, images et données d’impact accompagnent la navigation.', atlas: 'Une vision mondiale. États membres, programmes et lieux deviennent la navigation.', weave: 'La connaissance comme réseau. Projets, publications, cours, actualités et lieux révèlent leurs liens.',
     atlasTitle: 'Le patrimoine a une géographie.', atlasLead: 'Explorez l’ICCROM par les lieux, les États membres et les programmes où le savoir devient action.', weaveTitle: 'Tout est connecté.', weaveLead: 'ICCROM devient un graphe vivant de connaissances reliant projets, personnes, publications, apprentissage et territoires.', chooseAnother: 'Expériences'
   },
   es: {
-    chooserEyebrow: 'Siete perspectivas · un ICCROM',
+    chooserEyebrow: 'Tres perspectivas · un ICCROM',
     chooserTitle: 'Elige cómo quieres vivir el patrimonio.',
-    chooserLead: 'Siete direcciones creíbles para la misma institución, ecosistema de contenidos e identidad.',
+    chooserLead: 'Tres direcciones creíbles para la misma institución, ecosistema de contenidos e identidad.',
     enter: 'Entrar', pulse: 'Editorial, humana y viva. Historias, imágenes y cifras de impacto acompañan al visitante.', atlas: 'Global desde el diseño. Estados Miembros, programas y lugares se convierten en navegación.', weave: 'El conocimiento como red. Proyectos, publicaciones, cursos, noticias y lugares muestran sus relaciones.',
     atlasTitle: 'El patrimonio tiene una geografía.', atlasLead: 'Explora ICCROM a través de los lugares, Estados Miembros y programas donde el conocimiento se vuelve acción.', weaveTitle: 'Todo está conectado.', weaveLead: 'ICCROM se convierte en un grafo vivo de conocimiento que une proyectos, personas, publicaciones, aprendizaje y lugares.', chooseAnother: 'Experiencias'
   },
   it: {
-    chooserEyebrow: 'Sette prospettive · un solo ICCROM',
+    chooserEyebrow: 'Tre prospettive · un solo ICCROM',
     chooserTitle: 'Scegli come vivere il patrimonio.',
-    chooserLead: 'Sette direzioni credibili per la stessa istituzione, lo stesso ecosistema di contenuti e la stessa identità.',
+    chooserLead: 'Tre direzioni credibili per la stessa istituzione, lo stesso ecosistema di contenuti e la stessa identità.',
     enter: 'Entra nell’esperienza', pulse: 'Editoriale, umana e viva. Storie, immagini e numeri di impatto accompagnano la navigazione.', atlas: 'Globale per natura. Stati membri, programmi e luoghi diventano il sistema di navigazione.', weave: 'La conoscenza come rete. Progetti, pubblicazioni, corsi, news e luoghi mostrano le loro relazioni.',
     atlasTitle: 'Il patrimonio ha una geografia.', atlasLead: 'Esplora ICCROM attraverso luoghi, Stati membri e programmi in cui la conoscenza diventa azione.', weaveTitle: 'Tutto è connesso.', weaveLead: 'ICCROM diventa un grafo vivo di conoscenza: ogni progetto apre percorsi verso persone, pubblicazioni, formazione e luoghi.', chooseAnother: 'Esperienze'
   },
   ar: {
-    chooserEyebrow: 'سبع رؤى · إيكروم واحد',
+    chooserEyebrow: 'ثلاث رؤى · إيكروم واحد',
     chooserTitle: 'اختر كيف تريد أن تختبر التراث.',
-    chooserLead: 'سبعة اتجاهات موثوقة للمؤسسة نفسها ولنظام المحتوى والهوية نفسها.',
+    chooserLead: 'ثلاثة اتجاهات موثوقة للمؤسسة نفسها ولنظام المحتوى والهوية نفسها.',
     enter: 'ادخل التجربة', pulse: 'تجربة تحريرية وإنسانية وحية تجمع القصص والصور وأرقام الأثر.', atlas: 'منظور عالمي يجعل الدول الأعضاء والبرامج والأماكن أساس التنقل.', weave: 'المعرفة كشبكة تربط المشاريع والمنشورات والدورات والأخبار والأماكن.',
     atlasTitle: 'للتراث جغرافيا.', atlasLead: 'استكشف إيكروم عبر الأماكن والدول الأعضاء والبرامج التي تتحول فيها المعرفة إلى عمل.', weaveTitle: 'كل شيء مترابط.', weaveLead: 'يتحول إيكروم إلى شبكة معرفة حية تربط المشاريع والناس والمنشورات والتعلم والأماكن.', chooseAnother: 'التجارب'
   },
   zh: {
-    chooserEyebrow: '七种视角 · 一个 ICCROM',
+    chooserEyebrow: '三种视角 · 一个 ICCROM',
     chooserTitle: '选择你体验文化遗产的方式。',
-    chooserLead: '同一机构、同一内容生态和品牌身份的七种可信数字方向。',
+    chooserLead: '同一机构、同一内容生态和品牌身份的三种可信数字方向。',
     enter: '进入体验', pulse: '编辑感、人本且充满活力，以故事、影像和影响数据推动浏览体验。', atlas: '以全球视角为核心，让成员国、项目与地点成为导航。', weave: '把知识呈现为网络，连接项目、出版物、课程、新闻与地点。',
     atlasTitle: '遗产有自己的地理。', atlasLead: '通过知识转化为行动的地点、成员国和项目探索 ICCROM。', weaveTitle: '一切彼此相连。', weaveLead: 'ICCROM 成为一个活的知识图谱，每个项目都连接人物、出版物、学习与地点。', chooseAnother: '体验'
   },
   pt: {
-    chooserEyebrow: 'Sete perspectivas · um ICCROM',
+    chooserEyebrow: 'Três perspectivas · um ICCROM',
     chooserTitle: 'Escolha como quer experienciar o patrimônio.',
-    chooserLead: 'Sete direções credíveis para a mesma instituição, ecossistema de conteúdos e identidade.',
+    chooserLead: 'Três direções credíveis para a mesma instituição, ecossistema de conteúdos e identidade.',
     enter: 'Entrar', pulse: 'Editorial, humana e viva. Histórias, imagens e números de impacto acompanham a navegação.', atlas: 'Global por natureza. Estados-Membros, programas e lugares tornam-se o sistema de navegação.', weave: 'Conhecimento como rede. Projetos, publicações, cursos, notícias e lugares revelam suas relações.',
     atlasTitle: 'O patrimônio tem uma geografia.', atlasLead: 'Explore o ICCROM através dos lugares, Estados-Membros e programas onde o conhecimento se transforma em ação.', weaveTitle: 'Tudo está conectado.', weaveLead: 'O ICCROM torna-se um grafo vivo de conhecimento ligando projetos, pessoas, publicações, aprendizagem e lugares.', chooseAnother: 'Experiências'
   },
   hi: {
-    chooserEyebrow: 'सात दृष्टिकोण · एक ICCROM',
+    chooserEyebrow: 'तीन दृष्टिकोण · एक ICCROM',
     chooserTitle: 'चुनें कि आप विरासत को कैसे अनुभव करना चाहते हैं।',
-    chooserLead: 'एक ही संस्था, कंटेंट इकोसिस्टम और पहचान के लिए सात विश्वसनीय डिजिटल दिशाएँ।',
+    chooserLead: 'एक ही संस्था, कंटेंट इकोसिस्टम और पहचान के लिए तीन विश्वसनीय डिजिटल दिशाएँ।',
     enter: 'अनुभव खोलें', pulse: 'संपादकीय, मानवीय और जीवंत — कहानियाँ, चित्र और प्रभाव के आँकड़े अनुभव को आगे बढ़ाते हैं।', atlas: 'वैश्विक दृष्टि — सदस्य देश, कार्यक्रम और स्थान ही नेविगेशन बन जाते हैं।', weave: 'ज्ञान एक नेटवर्क के रूप में — परियोजनाएँ, प्रकाशन, पाठ्यक्रम, समाचार और स्थान आपस में जुड़ते हैं।',
     atlasTitle: 'विरासत की अपनी भूगोल है।', atlasLead: 'उन स्थानों, सदस्य देशों और कार्यक्रमों के माध्यम से ICCROM को देखें जहाँ ज्ञान कार्रवाई बनता है।', weaveTitle: 'सब कुछ जुड़ा हुआ है।', weaveLead: 'ICCROM एक जीवंत ज्ञान-ग्राफ बन जाता है जो परियोजनाओं, लोगों, प्रकाशनों, सीखने और स्थानों को जोड़ता है।', chooseAnother: 'अनुभव'
   }
@@ -107,48 +107,64 @@ const experienceCopy = {
 
 const staticConceptCopy = {
   en: {
+    chooserEyebrow: 'Seven perspectives · one ICCROM',
+    chooserLead: 'Seven credible directions for the same institution, content ecosystem and 2024 brand identity.',
     horizon: 'Institutional and immersive. Large-format photography, impact figures and a clear, contemporary journey.',
     chapters: 'A five-chapter experience structured around how ICCROM works, with accessibility at its core.',
     mosaic: 'Editorial and playful. Collage, colour and changing layouts create the rhythm of a cultural magazine.',
     patina: 'Material and tactile. Conservation itself becomes the interface through pigments, surfaces and restoration.'
   },
   fr: {
+    chooserEyebrow: 'Sept perspectives · un seul ICCROM',
+    chooserLead: 'Sept directions crédibles pour la même institution, le même écosystème de contenus et la même identité.',
     horizon: 'Institutionnel et immersif. Photographies grand format, chiffres d’impact et parcours contemporain clair.',
     chapters: 'Une expérience en cinq chapitres structurée autour de l’action de l’ICCROM, avec l’accessibilité au premier plan.',
     mosaic: 'Éditorial et ludique. Collage, couleur et mises en page changeantes donnent le rythme d’un magazine culturel.',
     patina: 'Matériel et tactile. La conservation devient l’interface à travers pigments, surfaces et restauration.'
   },
   es: {
+    chooserEyebrow: 'Siete perspectivas · un ICCROM',
+    chooserLead: 'Siete direcciones creíbles para la misma institución, ecosistema de contenidos e identidad.',
     horizon: 'Institucional e inmersiva. Fotografía a gran formato, cifras de impacto y un recorrido contemporáneo claro.',
     chapters: 'Una experiencia en cinco capítulos organizada en torno a cómo trabaja ICCROM, con la accesibilidad en el centro.',
     mosaic: 'Editorial y lúdica. Collage, color y composiciones cambiantes crean el ritmo de una revista cultural.',
     patina: 'Material y táctil. La conservación se convierte en interfaz mediante pigmentos, superficies y restauración.'
   },
   it: {
+    chooserEyebrow: 'Sette prospettive · un solo ICCROM',
+    chooserLead: 'Sette direzioni credibili per la stessa istituzione, lo stesso ecosistema di contenuti e la stessa identità.',
     horizon: 'Istituzionale e immersiva. Fotografia a pieno formato, numeri di impatto e un percorso contemporaneo chiaro.',
     chapters: 'Un’esperienza in cinque capitoli costruita intorno a come lavora ICCROM, con l’accessibilità al centro.',
     mosaic: 'Editoriale e giocosa. Collage, colore e impaginazioni variabili danno il ritmo di una rivista culturale.',
     patina: 'Materica e tattile. La conservazione diventa interfaccia attraverso pigmenti, superfici e restauro.'
   },
   ar: {
+    chooserEyebrow: 'سبع رؤى · إيكروم واحد',
+    chooserLead: 'سبعة اتجاهات موثوقة للمؤسسة نفسها ولنظام المحتوى والهوية نفسها.',
     horizon: 'مؤسسية وغامرة، تعتمد على الصور الكبيرة وأرقام الأثر ومسار معاصر وواضح.',
     chapters: 'تجربة من خمسة فصول تتمحور حول طريقة عمل إيكروم، مع وضع سهولة الوصول في صميم التصميم.',
     mosaic: 'تحريرية ومرحة، تجمع الكولاج والألوان وتنوع التخطيطات بإيقاع مجلة ثقافية.',
     patina: 'مادية ولمسية، تجعل الحفظ نفسه واجهة من خلال الأصباغ والأسطح والترميم.'
   },
   zh: {
+    chooserEyebrow: '七种视角 · 一个 ICCROM',
+    chooserLead: '同一机构、同一内容生态和品牌身份的七种可信数字方向。',
     horizon: '机构感与沉浸感并重，以大幅影像、影响数据和清晰的当代浏览路径为核心。',
     chapters: '围绕 ICCROM 的工作方式展开五个章节，并把无障碍体验置于核心。',
     mosaic: '编辑感而富有趣味，以拼贴、色彩和变化的版式营造文化杂志般的节奏。',
     patina: '强调材料与触感，让颜料、表面和修复过程本身成为交互界面。'
   },
   pt: {
+    chooserEyebrow: 'Sete perspectivas · um ICCROM',
+    chooserLead: 'Sete direções credíveis para a mesma instituição, ecossistema de conteúdos e identidade.',
     horizon: 'Institucional e imersiva. Fotografia em grande formato, números de impacto e um percurso contemporâneo claro.',
     chapters: 'Uma experiência em cinco capítulos organizada em torno de como o ICCROM trabalha, com acessibilidade no centro.',
     mosaic: 'Editorial e lúdica. Colagem, cor e layouts variáveis criam o ritmo de uma revista cultural.',
     patina: 'Material e tátil. A conservação torna-se a própria interface através de pigmentos, superfícies e restauro.'
   },
   hi: {
+    chooserEyebrow: 'सात दृष्टिकोण · एक ICCROM',
+    chooserLead: 'एक ही संस्था, कंटेंट इकोसिस्टम और पहचान के लिए सात विश्वसनीय डिजिटल दिशाएँ।',
     horizon: 'संस्थागत और इमर्सिव — बड़े चित्र, प्रभाव के आँकड़े और एक स्पष्ट समकालीन यात्रा।',
     chapters: 'ICCROM के काम करने के तरीके पर आधारित पाँच अध्यायों का अनुभव, जिसके केंद्र में अभिगम्यता है।',
     mosaic: 'संपादकीय और चंचल — कोलाज, रंग और बदलते लेआउट एक सांस्कृतिक पत्रिका जैसी लय बनाते हैं।',
@@ -770,9 +786,9 @@ function ExperienceChooser({ onSelect }) {
       </header>
 
       <section className="chooser-intro">
-        <p className="eyebrow">{e.chooserEyebrow}</p>
+        <p className="eyebrow">{staticReady ? sc.chooserEyebrow : e.chooserEyebrow}</p>
         <h1>{e.chooserTitle}</h1>
-        <p>{e.chooserLead}</p>
+        <p>{staticReady ? sc.chooserLead : e.chooserLead}</p>
       </section>
 
       <section className="chooser-grid">
